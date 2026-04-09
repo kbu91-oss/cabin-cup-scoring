@@ -30,7 +30,7 @@ export function TeamScoreboard({ scores, totalPoints = 216 }: TeamScoreboardProp
             <div className="w-4 h-4 md:w-6 md:h-6 bg-blue-600 rounded-full shadow-sm"></div>
             <span className="text-xs md:text-xl font-bold text-gray-900">{scores.team1.name}</span>
           </div>
-          <div className="text-4xl md:text-7xl font-black text-blue-600 mb-1 md:mb-3 tracking-tight">{scores.team1.score}</div>
+          <div className="text-4xl md:text-7xl font-black text-blue-600 mb-1 md:mb-3 tracking-tight">{scores.team1.score % 1 === 0 ? scores.team1.score : scores.team1.score.toFixed(1)}</div>
           <div className="text-[10px] md:text-sm text-gray-600 uppercase tracking-wider font-semibold leading-tight">{scores.team1.target}</div>
         </div>
 
@@ -50,7 +50,7 @@ export function TeamScoreboard({ scores, totalPoints = 216 }: TeamScoreboardProp
             <span className="text-xs md:text-xl font-bold text-gray-900">{scores.team2.name}</span>
             <div className="w-4 h-4 md:w-6 md:h-6 bg-red-600 rounded-full shadow-sm"></div>
           </div>
-          <div className="text-4xl md:text-7xl font-black text-red-600 mb-1 md:mb-3 tracking-tight">{scores.team2.score}</div>
+          <div className="text-4xl md:text-7xl font-black text-red-600 mb-1 md:mb-3 tracking-tight">{scores.team2.score % 1 === 0 ? scores.team2.score : scores.team2.score.toFixed(1)}</div>
           <div className="text-[10px] md:text-sm text-gray-600 uppercase tracking-wider font-semibold leading-tight">{scores.team2.target}</div>
         </div>
       </div>
@@ -76,8 +76,8 @@ export function TeamScoreboard({ scores, totalPoints = 216 }: TeamScoreboardProp
           <div className="absolute left-1/2 top-0 bottom-0 w-1 md:w-2 bg-amber-500 -translate-x-1/2 rounded-full shadow-md" style={{ height: 'calc(100% + 8px)', top: '-4px' }}></div>
         </div>
         <div className="flex justify-between text-xs md:text-sm text-gray-600 mt-2 md:mt-3">
-          <span className="font-medium">Team Kevin: {scores.team1.score}</span>
-          <span className="font-medium">Team Danny: {scores.team2.score}</span>
+          <span className="font-medium">Team Kevin: {scores.team1.score % 1 === 0 ? scores.team1.score : scores.team1.score.toFixed(1)}</span>
+          <span className="font-medium">Team Danny: {scores.team2.score % 1 === 0 ? scores.team2.score : scores.team2.score.toFixed(1)}</span>
         </div>
       </div>
     </div>
