@@ -1,5 +1,6 @@
 export { ScoringPage } from './ScoringPage'
 export { Header } from './Header'
 export { TeamScoreboard } from './TeamScoreboard'
+export { RoundSelector } from './RoundSelector'
 export { MatchCard } from './MatchCard'
 export { Legend } from './Legend'
