@@ -31,8 +31,8 @@ export function RoundSelector({ selectedRound, onRoundChange }: RoundSelectorPro
           onClick={() => handleSelect(round.id)}
           className={`py-2 md:py-3 px-2 rounded-full text-xs sm:text-sm font-semibold transition-all ${
             selected === round.id
-              ? 'bg-emerald-600 text-white shadow-md'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-[#0A2240] text-[#FFB81E] shadow-md'
+              : 'bg-gray-100 text-gray-700 hover:bg-[#0A2240]/10'
           }`}
         >
           {round.label}

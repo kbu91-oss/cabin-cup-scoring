@@ -6,32 +6,111 @@ import { TeamScoreboard } from './TeamScoreboard'
 import { RoundSelector } from './RoundSelector'
 import { MatchCard } from './MatchCard'
 
-// Initial match data
+// Initial match data organized by round
 const initialMatches = [
+  // Mountain Front 9 (Holes 1-9)
   {
     id: 1,
-    format: 'Mountain Front 9',
+    round: 'mountain-front',
+    holeStart: 1,
     players: { team1: 'Kevin & Mike', team2: 'Danny & Chris' },
     status: 'In Progress',
     holes: [0, 0, 0, 0, 0, 0, 0, 0, 0]
   },
   {
     id: 2,
-    format: 'Mountain Front 9',
+    round: 'mountain-front',
+    holeStart: 1,
     players: { team1: 'Justin & Tommy', team2: 'Rory & Jon' },
     status: 'In Progress',
     holes: [0, 0, 0, 0, 0, 0, 0, 0, 0]
   },
   {
     id: 3,
-    format: 'Mountain Front 9',
+    round: 'mountain-front',
+    holeStart: 1,
     players: { team1: 'Bryson & Scottie', team2: 'Matt & Tyrrell' },
+    status: 'In Progress',
+    holes: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  },
+  // Mountain Back 9 (Holes 10-18)
+  {
+    id: 4,
+    round: 'mountain-back',
+    holeStart: 10,
+    players: { team1: 'Kevin & Justin', team2: 'Danny & Rory' },
+    status: 'In Progress',
+    holes: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  },
+  {
+    id: 5,
+    round: 'mountain-back',
+    holeStart: 10,
+    players: { team1: 'Mike & Tommy', team2: 'Chris & Jon' },
+    status: 'In Progress',
+    holes: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  },
+  {
+    id: 6,
+    round: 'mountain-back',
+    holeStart: 10,
+    players: { team1: 'Bryson & Scottie', team2: 'Matt & Tyrrell' },
+    status: 'In Progress',
+    holes: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  },
+  // Links Front 9 (Holes 1-9)
+  {
+    id: 7,
+    round: 'links-front',
+    holeStart: 1,
+    players: { team1: 'Kevin & Bryson', team2: 'Danny & Matt' },
+    status: 'In Progress',
+    holes: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  },
+  {
+    id: 8,
+    round: 'links-front',
+    holeStart: 1,
+    players: { team1: 'Mike & Scottie', team2: 'Chris & Tyrrell' },
+    status: 'In Progress',
+    holes: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  },
+  {
+    id: 9,
+    round: 'links-front',
+    holeStart: 1,
+    players: { team1: 'Justin & Tommy', team2: 'Rory & Jon' },
+    status: 'In Progress',
+    holes: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  },
+  // Links Back 9 (Holes 10-18)
+  {
+    id: 10,
+    round: 'links-back',
+    holeStart: 10,
+    players: { team1: 'Kevin & Mike', team2: 'Danny & Chris' },
+    status: 'In Progress',
+    holes: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  },
+  {
+    id: 11,
+    round: 'links-back',
+    holeStart: 10,
+    players: { team1: 'Justin & Bryson', team2: 'Rory & Matt' },
+    status: 'In Progress',
+    holes: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  },
+  {
+    id: 12,
+    round: 'links-back',
+    holeStart: 10,
+    players: { team1: 'Tommy & Scottie', team2: 'Jon & Tyrrell' },
     status: 'In Progress',
     holes: [0, 0, 0, 0, 0, 0, 0, 0, 0]
   }
 ]
 
-const STORAGE_KEY = 'cabin-cup-matches'
+const STORAGE_KEY = 'cabin-cup-matches-v2'
 
 // Calculate team scores from all matches
 // 0 = not played, 1 = team1 win, -1 = team2 win, 2 = tie
@@ -47,12 +126,12 @@ function calculateTeamScores(matches: typeof initialMatches) {
 
   return {
     team1: {
-      name: 'Team Kevin',
+      name: 'Team Navy',
       score: team1Total,
       target: team1Total >= 108.5 ? 'WINNER!' : `NEEDS ${108.5 - team1Total} TO WIN`
     },
     team2: {
-      name: 'Team Danny',
+      name: 'Team Gold',
       score: team2Total,
       target: team2Total >= 108 ? 'RETAINS!' : `NEEDS ${108 - team2Total} TO RETAIN`
     }
@@ -62,6 +141,7 @@ function calculateTeamScores(matches: typeof initialMatches) {
 export function ScoringPage() {
   const [matches, setMatches] = useState(initialMatches)
   const [isLoaded, setIsLoaded] = useState(false)
+  const [selectedRound, setSelectedRound] = useState('mountain-front')
 
   // Load from local storage on mount
   useEffect(() => {
@@ -128,23 +208,26 @@ export function ScoringPage() {
         {/* Team Scoreboard */}
         <TeamScoreboard scores={teamScores} />
 
-        {/* Round Selector - TODO: Connect to filter matches by round */}
-        <RoundSelector />
+        {/* Round Selector */}
+        <RoundSelector selectedRound={selectedRound} onRoundChange={setSelectedRound} />
 
         {/* Current Matches Header */}
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Current Matches</h2>
 
         {/* Matches */}
         <div className="space-y-6">
-          {matches.map((match) => (
-            <MatchCard
-              key={match.id}
-              match={match}
-              onHoleScore={handleHoleScore}
-              onFinalize={handleFinalize}
-              onEdit={handleEdit}
-            />
-          ))}
+          {matches
+            .filter(match => match.round === selectedRound)
+            .map((match) => (
+              <MatchCard
+                key={match.id}
+                match={match}
+                holeStart={match.holeStart}
+                onHoleScore={handleHoleScore}
+                onFinalize={handleFinalize}
+                onEdit={handleEdit}
+              />
+            ))}
         </div>
       </main>
     </div>

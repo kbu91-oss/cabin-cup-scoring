@@ -13,12 +13,13 @@ interface Match {
 interface MatchCardProps {
   match: Match
   holesPerRound?: number
+  holeStart?: number
   onHoleScore?: (matchId: number, holeIndex: number, score: number) => void
   onFinalize?: (matchId: number) => void
   onEdit?: (matchId: number) => void
 }
 
-export function MatchCard({ match, holesPerRound = 9, onHoleScore, onFinalize, onEdit }: MatchCardProps) {
+export function MatchCard({ match, holesPerRound = 9, holeStart = 1, onHoleScore, onFinalize, onEdit }: MatchCardProps) {
   const [selectedHole, setSelectedHole] = useState<number | null>(null)
   const displayHoles = match.holes.slice(0, holesPerRound)
 
@@ -28,11 +29,11 @@ export function MatchCard({ match, holesPerRound = 9, onHoleScore, onFinalize, o
   const team1Score = match.holes.filter(h => h === 1).length + (ties * 0.5)
   const team2Score = match.holes.filter(h => h === -1).length + (ties * 0.5)
 
-  // Determine gradient background based on who's leading
+  // Determine gradient background based on who's leading (Navy and Gold)
   const gradientBackground = team1Score > team2Score
-    ? 'bg-gradient-to-r from-blue-200 via-blue-100 to-white'
+    ? 'bg-gradient-to-r from-[#0A2240]/30 via-[#0A2240]/10 to-white'
     : team2Score > team1Score
-    ? 'bg-gradient-to-l from-red-200 via-red-100 to-white'
+    ? 'bg-gradient-to-l from-[#FFB81E]/40 via-[#FFB81E]/20 to-white'
     : 'bg-white'
 
   return (
@@ -49,22 +50,22 @@ export function MatchCard({ match, holesPerRound = 9, onHoleScore, onFinalize, o
           {/* Team 1 Player */}
           <div className="flex-1 flex flex-col justify-start items-start">
             <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 mb-1 md:mb-2">{match.players.team1}</div>
-            <div className="text-xs sm:text-sm md:text-lg text-blue-600 font-bold">Team Kevin</div>
+            <div className="text-xs sm:text-sm md:text-lg text-[#0A2240] font-bold">Team Navy</div>
           </div>
 
           {/* Center - Score */}
           <div className="flex-1 text-center flex flex-col items-center justify-center">
-            <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-blue-600">
+            <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#0A2240]">
               {team1Score % 1 === 0 ? team1Score : team1Score.toFixed(1)}
               <span className="text-gray-400 mx-1 md:mx-2">-</span>
-              <span className="text-red-600">{team2Score % 1 === 0 ? team2Score : team2Score.toFixed(1)}</span>
+              <span className="text-[#FFB81E]">{team2Score % 1 === 0 ? team2Score : team2Score.toFixed(1)}</span>
             </div>
           </div>
 
           {/* Team 2 Player */}
           <div className="flex-1 flex flex-col justify-start items-end">
             <div className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 mb-1 md:mb-2 text-right">{match.players.team2}</div>
-            <div className="text-xs sm:text-sm md:text-lg text-red-600 font-bold">Team Danny</div>
+            <div className="text-xs sm:text-sm md:text-lg text-[#B8860B] font-bold">Team Gold</div>
           </div>
         </div>
       </div>
@@ -85,15 +86,15 @@ export function MatchCard({ match, holesPerRound = 9, onHoleScore, onFinalize, o
                     : 'hover:scale-110 hover:shadow-lg cursor-pointer'
                 } ${
                   score === 1
-                    ? `bg-blue-600 text-white ${match.status !== 'Final' && 'hover:bg-blue-700'}`
+                    ? `bg-[#0A2240] text-white ${match.status !== 'Final' && 'hover:bg-[#0A2240]/80'}`
                     : score === -1
-                    ? `bg-red-600 text-white ${match.status !== 'Final' && 'hover:bg-red-700'}`
+                    ? `bg-[#FFB81E] text-[#0A2240] ${match.status !== 'Final' && 'hover:bg-[#FFB81E]/80'}`
                     : score === 2
-                    ? `bg-yellow-400 text-gray-800 ${match.status !== 'Final' && 'hover:bg-yellow-500'}`
+                    ? `bg-gray-300 text-gray-700 ${match.status !== 'Final' && 'hover:bg-gray-400'}`
                     : `bg-gray-200 text-gray-700 ${match.status !== 'Final' && 'hover:bg-gray-300'}`
                 }`}
               >
-                {i + 1}
+                {holeStart + i}
               </button>
             ))}
 
@@ -102,7 +103,7 @@ export function MatchCard({ match, holesPerRound = 9, onHoleScore, onFinalize, o
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setSelectedHole(null)}>
                 <div className="bg-white rounded-2xl p-6 mx-4 max-w-sm w-full shadow-xl" onClick={e => e.stopPropagation()}>
                   <h3 className="text-xl font-bold text-center text-gray-800 mb-6">
-                    Hole {selectedHole + 1} Winner
+                    Hole {holeStart + selectedHole} Winner
                   </h3>
                   <div className="flex flex-col gap-3">
                     <button
@@ -110,7 +111,7 @@ export function MatchCard({ match, holesPerRound = 9, onHoleScore, onFinalize, o
                         onHoleScore?.(match.id, selectedHole, 1)
                         setSelectedHole(null)
                       }}
-                      className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all"
+                      className="w-full py-4 bg-[#0A2240] text-white font-bold rounded-xl hover:bg-[#0A2240]/80 transition-all"
                     >
                       {match.players.team1} Wins
                     </button>
@@ -119,7 +120,7 @@ export function MatchCard({ match, holesPerRound = 9, onHoleScore, onFinalize, o
                         onHoleScore?.(match.id, selectedHole, 2)
                         setSelectedHole(null)
                       }}
-                      className="w-full py-4 bg-yellow-400 text-gray-800 font-bold rounded-xl hover:bg-yellow-500 transition-all"
+                      className="w-full py-4 bg-[#418FDE] text-white font-bold rounded-xl hover:bg-[#3A7FC7] transition-all"
                     >
                       Tie
                     </button>
@@ -128,7 +129,7 @@ export function MatchCard({ match, holesPerRound = 9, onHoleScore, onFinalize, o
                         onHoleScore?.(match.id, selectedHole, -1)
                         setSelectedHole(null)
                       }}
-                      className="w-full py-4 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all"
+                      className="w-full py-4 bg-[#FFB81E] text-[#0A2240] font-bold rounded-xl hover:bg-[#FFB81E]/80 transition-all"
                     >
                       {match.players.team2} Wins
                     </button>
@@ -155,17 +156,17 @@ export function MatchCard({ match, holesPerRound = 9, onHoleScore, onFinalize, o
               <span className="text-xs sm:text-sm text-gray-400">No scores yet</span>
             ) : team1Score > team2Score ? (
               <>
-                <div className="w-2 h-2 rounded-full bg-blue-600"></div>
+                <div className="w-2 h-2 rounded-full bg-[#0A2240]"></div>
                 <span className="text-xs sm:text-sm text-gray-600">{match.players.team1} {match.status === 'Final' ? 'wins' : 'leading'}</span>
               </>
             ) : team2Score > team1Score ? (
               <>
-                <div className="w-2 h-2 rounded-full bg-red-600"></div>
+                <div className="w-2 h-2 rounded-full bg-[#FFB81E]"></div>
                 <span className="text-xs sm:text-sm text-gray-600">{match.players.team2} {match.status === 'Final' ? 'wins' : 'leading'}</span>
               </>
             ) : (
               <>
-                <div className="w-2 h-2 rounded-full bg-yellow-400"></div>
+                <div className="w-2 h-2 rounded-full bg-gray-300"></div>
                 <span className="text-xs sm:text-sm text-gray-600">Match Tied</span>
               </>
             )}
@@ -175,7 +176,7 @@ export function MatchCard({ match, holesPerRound = 9, onHoleScore, onFinalize, o
           {match.status !== 'Final' && displayHoles.every(h => h !== 0) && (
             <button
               onClick={() => onFinalize?.(match.id)}
-              className="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-full hover:bg-emerald-700 transition-all"
+              className="px-4 py-2 bg-[#0A2240] text-[#FFB81E] text-sm font-semibold rounded-full hover:bg-[#0A2240]/80 transition-all"
             >
               Finalize Match
             </button>
