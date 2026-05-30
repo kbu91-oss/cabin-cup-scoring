@@ -1,62 +1,52 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Brand */
+  --color-navy: #0A2240;
+  --color-navy-soft: #1D4ED8;
+  --color-navy-blue: #2563EB;
+  --color-gold: #FFB81E;
+  --color-gold-dark: #B8860B;
+
+  /* Surfaces */
+  --color-bg: #F9FAFB;
+  --color-surface: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-text: #111827;
+  --color-text-muted: #6B7280;
+  --color-text-soft: #9CA3AF;
+
+  /* Grays + semantic */
+  --color-c-gray-100: #F3F4F6;
+  --color-c-gray-200: #E5E7EB;
+  --color-c-gray-300: #D1D5DB;
+  --color-c-gray-500: #6B7280;
+  --color-c-gray-700: #374151;
+  --color-red-soft: #FEF2F2;
+  --color-red-border: #FECACA;
+  --color-red-500: #EF4444;
+  --color-red-600: #DC2626;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html, body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-  line-height: 1.6;
+@keyframes cabincup-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
+.animate-pulse-dot { animation: cabincup-pulse 1.6s ease-in-out infinite; }
 
-/* Custom styles for golf scoring */
-.golf-card {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.15s ease-in-out;
+@keyframes cabincup-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }
-
-.golf-card:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
-}
-
-.hole-circle {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: bold;
-  color: white;
-}
-
-.team-blue {
-  background-color: #2563eb;
-}
-
-.team-red {
-  background-color: #dc2626;
-}
-
-.hole-tie {
-  background-color: #d1d5db;
-  color: #6b7280;
-}
+.animate-shake { animation: cabincup-shake 0.3s; }

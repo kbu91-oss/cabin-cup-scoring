@@ -1,0 +1,43 @@
+// Cup-level constants — scoring math, dates, and the organizer password.
+
+export const CUP_LABEL = 'Cabin Cup 2026';
+
+// Dates — update when the actual 2026 dates lock.
+export const CUP_START = new Date('2026-06-18T15:00:00-04:00'); // Thu 3pm ET
+export const CUP_END = new Date('2026-06-21T19:00:00-04:00'); // Sun evening
+
+// Organizer password to reveal MVP voting results early.
+export const MVP_REVEAL_PASSWORD = 'cabincup';
+
+// Cup scoring math
+export const GOLF_POINTS = 108;
+export const DRINKING_POINTS_PER_WIN = 2;
+export const BEER_PONG_CAPTAINS_POINTS = 1;
+export const TOTAL_POINTS = 217; // golf 108 + drinking 108 + captains BP 1
+export const WIN_THRESHOLD = 109; // odd total → 109 to win outright
+
+// MVP voting weights
+export const MVP_VOTE_WEIGHTS: Record<'first' | 'second' | 'third', number> = {
+  first: 5,
+  second: 3,
+  third: 1,
+};
+
+export const EVENT_IDS = [
+  'golf',
+  'captains-beer-pong',
+  'beer-die',
+  'bags',
+  'beer-pong',
+] as const;
+export type EventId = (typeof EVENT_IDS)[number];
+
+export const ROUND_LABELS: Record<string, string> = {
+  'mountain-front': 'Mountain Front 9',
+  'mountain-back': 'Mountain Back 9',
+  'links-front': 'Links Front 9',
+  'links-back': 'Links Back 9',
+};
+export type RoundId = keyof typeof ROUND_LABELS;
+
+export const fmt = (n: number) => (n % 1 === 0 ? String(n) : n.toFixed(1));

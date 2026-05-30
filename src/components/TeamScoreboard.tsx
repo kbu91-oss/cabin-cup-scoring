@@ -1,85 +1,91 @@
-interface TeamScoreboardProps {
-  scores: {
-    team1: { name: string; score: number; target: string }
-    team2: { name: string; score: number; target: string }
-  }
-  totalPoints?: number
-}
+'use client';
 
-export function TeamScoreboard({ scores, totalPoints = 216 }: TeamScoreboardProps) {
-  // Cap percentages to prevent overflow (max 50% each to meet at center)
-  const team1Percentage = Math.min((scores.team1.score / totalPoints) * 100, 50)
-  const team2Percentage = Math.min((scores.team2.score / totalPoints) * 100, 50)
+import { useStore } from '@/lib/store';
+import { TOTAL_POINTS, WIN_THRESHOLD, fmt } from '@/lib/cup';
+import { teamTotals } from '@/lib/scoring';
 
-  // Determine who's leading
-  const leader = scores.team1.score > scores.team2.score ? 'team1' : scores.team2.score > scores.team1.score ? 'team2' : 'tied'
-
-  // Background gradient based on leader (Navy and Gold)
-  const barBackground = leader === 'team1'
-    ? 'bg-gradient-to-r from-[#0A2240]/20 via-[#0A2240]/10 to-gray-200'
-    : leader === 'team2'
-    ? 'bg-gradient-to-l from-[#FFB81E]/30 via-[#FFB81E]/15 to-gray-200'
-    : 'bg-gray-200'
+export function TeamScoreboard() {
+  const { state } = useStore();
+  const totals = teamTotals({
+    golfMatches: state.golfMatches,
+    drinking: state.drinkingMatches,
+    captainsBeerPongWinner: state.beerPongWinner,
+  });
+  const harveyTarget = totals.harvey >= WIN_THRESHOLD ? 'WINNER!' : `NEEDS ${fmt(WIN_THRESHOLD - totals.harvey)} TO WIN`;
+  const carberyTarget = totals.carbery >= WIN_THRESHOLD ? 'WINNER!' : `NEEDS ${fmt(WIN_THRESHOLD - totals.carbery)} TO WIN`;
+  const navyPct = Math.min((totals.harvey / TOTAL_POINTS) * 100, 50);
+  const goldPct = Math.min((totals.carbery / TOTAL_POINTS) * 100, 50);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 md:p-8 mb-6 md:mb-8 golf-card">
-      <div className="grid grid-cols-3 gap-2 md:gap-8 items-center">
-        {/* Team 1 - Navy */}
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-1 md:gap-3 mb-2 md:mb-6">
-            <div className="w-4 h-4 md:w-6 md:h-6 bg-[#0A2240] rounded-full shadow-sm"></div>
-            <span className="text-xs md:text-xl font-bold text-gray-900">{scores.team1.name}</span>
+    <section className="bg-surface border border-border rounded-2xl p-5 sm:p-8 shadow-sm flex flex-col gap-3">
+      <div className="grid grid-cols-3 items-center gap-2 sm:gap-4">
+        <div className="flex flex-col items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="w-4 h-4 sm:w-6 sm:h-6 bg-navy rounded-full" />
+            <span className="text-xs sm:text-xl font-bold">Team Harvey</span>
           </div>
-          <div className="text-4xl md:text-7xl font-black text-[#0A2240] mb-1 md:mb-3 tracking-tight">{scores.team1.score % 1 === 0 ? scores.team1.score : scores.team1.score.toFixed(1)}</div>
-          <div className="text-[10px] md:text-sm text-gray-600 uppercase tracking-wider font-semibold leading-tight">{scores.team1.target}</div>
+          <div className="text-5xl sm:text-7xl md:text-8xl font-black text-navy -tracking-[2px] leading-none">
+            {fmt(totals.harvey)}
+          </div>
+          <div className="text-[10px] sm:text-xs font-semibold text-text-muted tracking-wider text-center">
+            {harveyTarget}
+          </div>
         </div>
 
-        {/* Center - Logo & Trophy */}
-        <div className="text-center flex flex-col items-center">
+        <div className="flex flex-col items-center gap-2">
+          {/* Using <img> because Next/Image needs config we haven't set up yet */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/cabin-cup-logo.png"
-            alt="Bobcats Cup Logo"
-            className="w-16 h-16 md:w-28 md:h-28 object-contain mb-1 md:mb-2"
+            alt="Cabin Cup logo"
+            className="w-16 h-16 sm:w-28 sm:h-28 rounded-lg object-contain bg-c-gray-100"
           />
-          <div className="text-xs md:text-2xl font-black text-[#0A2240] tracking-tight">BOBCATS CUP</div>
+          <div className="text-xs sm:text-[28px] font-black -tracking-[0.5px]">CABIN CUP</div>
         </div>
 
-        {/* Team 2 - Gold */}
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-1 md:gap-3 mb-2 md:mb-6">
-            <span className="text-xs md:text-xl font-bold text-gray-900">{scores.team2.name}</span>
-            <div className="w-4 h-4 md:w-6 md:h-6 bg-[#FFB81E] rounded-full shadow-sm border border-amber-600"></div>
+        <div className="flex flex-col items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-xs sm:text-xl font-bold">Team Carbery</span>
+            <span className="w-4 h-4 sm:w-6 sm:h-6 bg-gold border border-gold-dark rounded-full" />
           </div>
-          <div className="text-4xl md:text-7xl font-black text-[#B8860B] mb-1 md:mb-3 tracking-tight">{scores.team2.score % 1 === 0 ? scores.team2.score : scores.team2.score.toFixed(1)}</div>
-          <div className="text-[10px] md:text-sm text-gray-600 uppercase tracking-wider font-semibold leading-tight">{scores.team2.target}</div>
+          <div className="text-5xl sm:text-7xl md:text-8xl font-black text-gold-dark -tracking-[2px] leading-none">
+            {fmt(totals.carbery)}
+          </div>
+          <div className="text-[10px] sm:text-xs font-semibold text-text-muted tracking-wider text-center">
+            {carberyTarget}
+          </div>
         </div>
       </div>
 
-      {/* Progress indicator */}
-      <div className="mt-4 md:mt-10 pt-4 md:pt-8 border-t border-gray-200">
-        <div className="flex items-center justify-center text-xs md:text-sm text-gray-600 mb-2 md:mb-3">
-          <span className="font-medium">{totalPoints} Total Points</span>
+      <div className="border-t border-border pt-6 sm:pt-8 mt-4 flex flex-col gap-3">
+        <div className="text-center text-xs sm:text-sm text-text-muted font-medium">
+          {TOTAL_POINTS} Total Cup Points
         </div>
-        {/* Dual-fill progress bar */}
-        <div className={`relative w-full rounded-xl h-8 md:h-16 shadow-inner overflow-hidden ${barBackground}`}>
-          {/* Navy fill from left */}
+        <div
+          className="relative w-full h-10 sm:h-16 rounded-xl overflow-visible"
+          style={{
+            background:
+              'linear-gradient(to right, rgba(10,34,64,0.12), rgba(10,34,64,0.06), var(--color-c-gray-200))',
+          }}
+        >
           <div
-            className="absolute left-0 top-0 bottom-0 bg-gradient-to-b from-[#0A2240] to-[#0A2240]/80 rounded-l-xl transition-all duration-500"
-            style={{ width: `${team1Percentage}%` }}
-          ></div>
-          {/* Gold fill from right */}
+            className="absolute left-0 top-0 bottom-0 bg-navy rounded-l-xl transition-[width] duration-500"
+            style={{ width: `${navyPct}%` }}
+          />
           <div
-            className="absolute right-0 top-0 bottom-0 bg-gradient-to-b from-[#FFB81E] to-[#B8860B] rounded-r-xl transition-all duration-500"
-            style={{ width: `${team2Percentage}%` }}
-          ></div>
-          {/* White win line at center */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-1 md:w-2 bg-white -translate-x-1/2 rounded-full shadow-md border border-gray-300" style={{ height: 'calc(100% + 8px)', top: '-4px' }}></div>
+            className="absolute right-0 top-0 bottom-0 rounded-r-xl transition-[width] duration-500"
+            style={{
+              width: `${goldPct}%`,
+              background: 'linear-gradient(180deg, var(--color-gold), var(--color-gold-dark))',
+            }}
+          />
+          <div className="absolute left-1/2 -top-1 -bottom-1 w-2 bg-white -translate-x-1/2 rounded-full shadow ring-1 ring-c-gray-300" />
         </div>
-        <div className="flex justify-between text-xs md:text-sm text-gray-600 mt-2 md:mt-3">
-          <span className="font-medium">Team Kevin: {scores.team1.score % 1 === 0 ? scores.team1.score : scores.team1.score.toFixed(1)}</span>
-          <span className="font-medium">Team Danny: {scores.team2.score % 1 === 0 ? scores.team2.score : scores.team2.score.toFixed(1)}</span>
+        <div className="flex justify-between text-[11px] sm:text-xs text-text-soft">
+          <span>Team Harvey: {fmt(totals.harvey)}</span>
+          <span>Team Carbery: {fmt(totals.carbery)}</span>
         </div>
       </div>
-    </div>
-  )
+    </section>
+  );
 }

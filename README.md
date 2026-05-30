@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Cabin Cup 2026
 
-## Getting Started
+Live scoreboard, MVP voting, schedule, team rosters, history, and detail reference for the 2026 Cabin Cup ("Pour It On" · est. 2010).
 
-First, run the development server:
+Built with Next.js 16 + React 19 + Tailwind 4 + TypeScript. State is currently device-local (localStorage). Cross-device sync via Supabase is the next planned upgrade.
+
+## Run locally
 
 ```bash
+npm install   # only needed the first time, or after dep changes
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open <http://localhost:3000>.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Pages
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Route        | What it does |
+| ------------ | ------------ |
+| `/`          | Live cup scoreboard — team totals, event tabs (Golf · Captains' Beer Pong · Beer Die · Bags · Beer Pong), hole-by-hole golf scoring, drinking-match toggles with finalize/edit, captain pick modal. |
+| `/teams`     | Both rosters with handicaps, captains, shirt sizes, class years, Glaicar/Soren combo + Ghost notes. |
+| `/mvp`       | Al Carbone MVP — voter pills with checkmarks, password-protected results reveal, sub-tabs (Overall / By Event / Player Cards), live stats. |
+| `/schedule`  | Thursday → Sunday day cards. Some events deep-link into the scoreboard. |
+| `/details`   | Locations w/ map links, scoring & cup math, format rules, awards, MVP voting rules. |
+| `/history`   | All-time results table + year-by-year cards back to 2010, including the street-hockey era. |
 
-## Learn More
+## Editing data
 
-To learn more about Next.js, take a look at the following resources:
+All the static data lives in `src/lib/`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| File          | What it holds |
+| ------------- | ------------- |
+| `teams.ts`    | Both team rosters, handicaps, derived voter list. |
+| `cup.ts`      | Cup constants (totals, dates, win threshold, MVP weights, organizer password). |
+| `matches.ts`  | 12 golf matches + pre-computed 18-match drinking schedules (slot-disjoint, partner-covered, matchup-unique). |
+| `history.ts`  | Past Cabin Cup years. |
+| `schedule.ts` | 2026 itinerary day-by-day. |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Want to change a date? `cup.ts` → `CUP_START` / `CUP_END`.
+Want to change the MVP unlock password? `cup.ts` → `MVP_REVEAL_PASSWORD`.
+Want to add a new history year? Append to the `HISTORY` array in `history.ts`.
 
-## Deploy on Vercel
+## Storage
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+State persists to `localStorage` under the key `cabin-cup-next-v1`. Per device, not synced across devices. Use the "Reset all scores" button at the bottom of the scoreboard to clear.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy
+
+```bash
+# from the project root
+vercel
+```
+
+Or push to a Git repo and import in the [Vercel dashboard](https://vercel.com/new).
