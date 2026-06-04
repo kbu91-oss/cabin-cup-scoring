@@ -39,7 +39,7 @@ export const TEAMS: { harvey: Team; carbery: Team } = {
     captain: { display: 'Dan Carbery', last: 'Carbery', cls: 13, shirt: 'M', hcp: 18 },
     players: [
       { display: 'Kevin Bui',       last: 'Bui',       cls: 12, shirt: 'L',  hcp: 18 },
-      { display: 'Looch',           last: 'Looch',     cls: 16, shirt: 'L',  hcp: 3.4 },
+      { display: 'Zach Luczyk',     last: 'Luczyk',    cls: 16, shirt: 'L',  hcp: 3.4 },
       {
         display: 'Mike Glaicar', last: 'Glaicar', cls: 12, shirt: 'L', hcp: 12,
         combo: true, days: 'Friday golf only', note: 'Combo pick with Soren · Friday golf only',
