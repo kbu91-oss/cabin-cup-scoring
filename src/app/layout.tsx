@@ -15,9 +15,9 @@ export const metadata: Metadata = {
     siteName: 'Cabin Cup',
     images: [
       {
-        url: '/cabin-cup-logo.png',
-        width: 1024,
-        height: 1024,
+        url: '/cabin-cup-og.png',
+        width: 512,
+        height: 512,
         alt: 'Cabin Cup logo',
       },
     ],
@@ -27,10 +27,12 @@ export const metadata: Metadata = {
     card: 'summary', // square thumbnail (iMessage uses this style)
     title: 'Cabin Cup 2026',
     description: 'Live scoreboard · Pour It On · June 11–14',
-    images: ['/cabin-cup-logo.png'],
+    images: ['/cabin-cup-og.png'],
   },
+  // favicon comes from src/app/favicon.ico automatically (25KB).
+  // apple-touch-icon for iOS bookmarks; fine to use the 1024x1024 since it's only
+  // fetched when a user adds the site to their home screen.
   icons: {
-    icon: '/cabin-cup-logo.png',
     apple: '/cabin-cup-logo.png',
   },
 };

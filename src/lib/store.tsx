@@ -367,24 +367,32 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }, 400);
   }, [state, hydrated]);
 
-  // When sync goes into error state, retry the last unsaved push every 5s
-  // until it succeeds (or another state change supersedes it).
+  // While in error state, every 5s: (a) retry any pending write, or
+  // (b) if no pending write, do a lightweight ping read to detect when
+  // Supabase comes back online and flip the status back to live.
   useEffect(() => {
     if (syncStatus !== 'error') return;
     const sb = supabase;
     if (!sb) return;
     const tick = window.setInterval(async () => {
       const json = JSON.stringify(stateRef.current);
-      if (json === lastSyncedJsonRef.current) return; // nothing pending
-      const previous = lastSyncedJsonRef.current;
-      lastSyncedJsonRef.current = json;
-      const { error } = await sb
-        .from('cup_state')
-        .upsert({ year: CUP_YEAR, state: stateRef.current, updated_at: new Date().toISOString() });
-      if (error) {
-        lastSyncedJsonRef.current = previous;
+      const hasPendingWrite = json !== lastSyncedJsonRef.current;
+
+      if (hasPendingWrite) {
+        const previous = lastSyncedJsonRef.current;
+        lastSyncedJsonRef.current = json;
+        const { error } = await sb
+          .from('cup_state')
+          .upsert({ year: CUP_YEAR, state: stateRef.current, updated_at: new Date().toISOString() });
+        if (error) {
+          lastSyncedJsonRef.current = previous;
+        } else {
+          setSyncStatus('live');
+        }
       } else {
-        setSyncStatus('live');
+        // Ping read — verifies connectivity without mutating state.
+        const { error } = await sb.from('cup_state').select('year').eq('year', CUP_YEAR).limit(1);
+        if (!error) setSyncStatus('live');
       }
     }, 5000);
     return () => window.clearInterval(tick);
