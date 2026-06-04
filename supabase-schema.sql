@@ -22,4 +22,18 @@ create policy "anyone can write cup_state"
   using (true) with check (true);
 
 -- Enable realtime broadcasts for this table.
-alter publication supabase_realtime add table cup_state;
+-- Idempotent — skips silently if cup_state is already in the publication.
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and tablename = 'cup_state'
+  ) then
+    alter publication supabase_realtime add table cup_state;
+  end if;
+end $$;
+
+-- IMPORTANT: send the full row on UPDATEs (not just the primary key).
+-- Without this, every device beyond the first one ignores updates because
+-- the realtime payload arrives without the `state` field.
+alter table cup_state replica identity full;
