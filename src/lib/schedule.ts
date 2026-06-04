@@ -20,7 +20,8 @@ export type ScheduleLink =
   | 'bags'
   | 'beer-pong'
   | 'mvp'
-  | 'lunch';
+  | 'lunch'
+  | 'travel';
 
 export type ScheduleDay = {
   id: string;
@@ -34,11 +35,11 @@ export const SCHEDULE_DAYS: ScheduleDay[] = [
   {
     id: 'thursday',
     label: 'Thursday',
-    date: 'June 2026 · TBD',
+    date: 'June 11, 2026',
     tag: 'Opening Day',
     events: [
       { time: '3:00pm – 3:30pm', title: 'Optional Round of Golf', sub: 'Tee off window — early arrivals welcome' },
-      { time: '3:00pm – 9:00pm', title: 'Arrivals' },
+      { time: '3:00pm – 9:00pm', title: 'Arrivals', sub: 'Share your time on the Travel tab', link: 'travel' },
       {
         time: '9:45pm',
         title: 'Opening Ceremonies',
@@ -54,7 +55,7 @@ export const SCHEDULE_DAYS: ScheduleDay[] = [
   {
     id: 'friday',
     label: 'Friday',
-    date: 'June 2026 · TBD',
+    date: 'June 12, 2026',
     tag: 'Golf Day',
     events: [
       { time: '7:30am', title: 'Wakey Wakey' },
@@ -75,7 +76,7 @@ export const SCHEDULE_DAYS: ScheduleDay[] = [
   {
     id: 'saturday',
     label: 'Saturday',
-    date: 'June 2026 · TBD',
+    date: 'June 13, 2026',
     tag: 'Backyard Games',
     events: [
       { time: '8:00am – 9:30am', title: 'Breakfast sandwiches at Cabin', sub: 'ADK Diner' },
@@ -98,7 +99,7 @@ export const SCHEDULE_DAYS: ScheduleDay[] = [
   {
     id: 'sunday',
     label: 'Sunday',
-    date: 'June 2026 · TBD',
+    date: 'June 14, 2026',
     tag: 'Wrap Up',
     events: [
       { time: 'Morning', title: 'Clean cabin' },
@@ -119,5 +120,6 @@ export function linkHrefFor(link?: ScheduleLink): { href: string; hash?: string 
     case 'beer-pong':           return { href: '/', hash: 'event=beer-pong' };
     case 'mvp':                 return { href: '/mvp' };
     case 'lunch':               return { href: '/lunch' };
+    case 'travel':              return { href: '/travel' };
   }
 }

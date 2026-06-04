@@ -49,6 +49,14 @@ export type LunchOrder = {
   timestamp: number;
 };
 
+export type TravelArrival = {
+  playerId: string;         // voter.id (last name)
+  date: string;             // YYYY-MM-DD
+  time: string;             // HH:MM (24-hour)
+  notes?: string;           // e.g. "DL5121 from JFK · terminal 4"
+  timestamp: number;
+};
+
 export type AppState = {
   golfMatches: GolfMatch[];
   drinkingMatches: DrinkingState;
@@ -57,6 +65,7 @@ export type AppState = {
   mvpVotes: MvpVote[];
   mvpResultsRevealed: boolean;
   lunchOrders: LunchOrder[];
+  travelArrivals: TravelArrival[];
 };
 
 function initialState(): AppState {
@@ -68,6 +77,7 @@ function initialState(): AppState {
     mvpVotes: [],
     mvpResultsRevealed: false,
     lunchOrders: [],
+    travelArrivals: [],
   };
 }
 
@@ -169,6 +179,22 @@ function normaliseState(raw: unknown): AppState {
                 notes: typeof it.notes === 'string' ? it.notes : undefined,
               }))
           : [],
+      }));
+  }
+  if (Array.isArray(data.travelArrivals)) {
+    next.travelArrivals = data.travelArrivals
+      .filter((t): t is TravelArrival =>
+        !!t && typeof t === 'object'
+        && typeof t.playerId === 'string' && validIds.has(t.playerId)
+        && typeof t.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(t.date)
+        && typeof t.time === 'string' && /^\d{2}:\d{2}$/.test(t.time)
+      )
+      .map(t => ({
+        playerId: t.playerId,
+        date: t.date,
+        time: t.time,
+        notes: typeof t.notes === 'string' ? t.notes : undefined,
+        timestamp: typeof t.timestamp === 'number' ? t.timestamp : Date.now(),
       }));
   }
   return next;

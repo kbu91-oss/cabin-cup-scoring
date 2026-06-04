@@ -18,8 +18,7 @@ export default function SchedulePage() {
       </div>
 
       <div className="max-w-5xl w-full mx-auto mt-4 p-3.5 border border-border border-l-4 border-l-gold bg-surface rounded-lg text-[13px] text-text-muted leading-relaxed">
-        Dates carried over from the 2025 itinerary — update <code className="bg-bg px-1.5 py-0.5 rounded text-[11px]">SCHEDULE_DAYS</code> in
-        <code className="bg-bg px-1.5 py-0.5 rounded text-[11px]"> src/lib/schedule.ts</code> once 2026 details are confirmed.
+        Times subject to change closer to the cup.
         Locations live on the <Link href="/details" className="text-navy underline font-semibold">Details page</Link>.
       </div>
     </>

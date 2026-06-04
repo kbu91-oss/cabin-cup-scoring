@@ -2,9 +2,9 @@
 
 export const CUP_LABEL = 'Cabin Cup 2026';
 
-// Dates — update when the actual 2026 dates lock.
-export const CUP_START = new Date('2026-06-18T15:00:00-04:00'); // Thu 3pm ET
-export const CUP_END = new Date('2026-06-21T19:00:00-04:00'); // Sun evening
+// Cup dates — Thursday June 11 to Sunday June 14, 2026.
+export const CUP_START = new Date('2026-06-11T15:00:00-04:00'); // Thu 3pm ET
+export const CUP_END = new Date('2026-06-14T19:00:00-04:00'); // Sun evening
 
 // Organizer password to reveal MVP voting results early.
 export const MVP_REVEAL_PASSWORD = 'cabincup';
