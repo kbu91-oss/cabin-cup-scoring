@@ -196,7 +196,7 @@ function MyOrderCard({
   onRemove: (lineId: string) => void;
 }) {
   const items = order?.items ?? [];
-  const total = items.reduce((sum, it) => sum + priceFor(MENU_BY_ID[it.itemId]!, it.size), 0);
+  const total = items.reduce((sum, it) => sum + (MENU_BY_ID[it.itemId] ? priceFor(MENU_BY_ID[it.itemId], it.size) : 0), 0);
   return (
     <div className="bg-surface border border-border rounded-2xl p-4 sm:p-5 flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
@@ -272,7 +272,7 @@ function OrderLine({
 function EveryoneView({ orders }: { orders: LunchOrder[] }) {
   const playersWithOrders = orders.filter(o => o.items.length > 0);
   const grandTotal = playersWithOrders.reduce(
-    (sum, o) => sum + o.items.reduce((s, it) => s + priceFor(MENU_BY_ID[it.itemId]!, it.size), 0),
+    (sum, o) => sum + o.items.reduce((s, it) => s + (MENU_BY_ID[it.itemId] ? priceFor(MENU_BY_ID[it.itemId], it.size) : 0), 0),
     0
   );
 
@@ -370,7 +370,7 @@ function EveryoneView({ orders }: { orders: LunchOrder[] }) {
         {playersWithOrders.map(o => {
           const voter = VOTERS.find(v => v.id === o.playerId);
           if (!voter) return null;
-          const playerTotal = o.items.reduce((s, it) => s + priceFor(MENU_BY_ID[it.itemId]!, it.size), 0);
+          const playerTotal = o.items.reduce((s, it) => s + (MENU_BY_ID[it.itemId] ? priceFor(MENU_BY_ID[it.itemId], it.size) : 0), 0);
           return (
             <div key={o.playerId} className="bg-surface border border-border rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">

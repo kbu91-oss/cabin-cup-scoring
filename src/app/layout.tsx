@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { SiteHeader } from '@/components/SiteHeader';
 import { CountdownBanner } from '@/components/CountdownBanner';
@@ -7,6 +7,12 @@ import { StoreProvider } from '@/lib/store';
 export const metadata: Metadata = {
   title: 'Cabin Cup 2026',
   description: 'Live scoreboard for the Cabin Cup — Pour It On',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover', // respect iPhone notch / safe areas
 };
 
 export default function RootLayout({

@@ -350,18 +350,45 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
     if (writeTimerRef.current) window.clearTimeout(writeTimerRef.current);
     writeTimerRef.current = window.setTimeout(async () => {
+      // Optimistically advance the sync marker — if the write fails we roll it
+      // back so the next state change (or our retry tick) re-attempts the push.
+      const previousSynced = lastSyncedJsonRef.current;
       lastSyncedJsonRef.current = json;
       const { error } = await sb
         .from('cup_state')
         .upsert({ year: CUP_YEAR, state, updated_at: new Date().toISOString() });
       if (error) {
         console.error('Supabase upsert failed', error);
+        lastSyncedJsonRef.current = previousSynced; // rollback for retry
         setSyncStatus('error');
       } else {
         setSyncStatus('live');
       }
     }, 400);
   }, [state, hydrated]);
+
+  // When sync goes into error state, retry the last unsaved push every 5s
+  // until it succeeds (or another state change supersedes it).
+  useEffect(() => {
+    if (syncStatus !== 'error') return;
+    const sb = supabase;
+    if (!sb) return;
+    const tick = window.setInterval(async () => {
+      const json = JSON.stringify(stateRef.current);
+      if (json === lastSyncedJsonRef.current) return; // nothing pending
+      const previous = lastSyncedJsonRef.current;
+      lastSyncedJsonRef.current = json;
+      const { error } = await sb
+        .from('cup_state')
+        .upsert({ year: CUP_YEAR, state: stateRef.current, updated_at: new Date().toISOString() });
+      if (error) {
+        lastSyncedJsonRef.current = previous;
+      } else {
+        setSyncStatus('live');
+      }
+    }, 5000);
+    return () => window.clearInterval(tick);
+  }, [syncStatus]);
 
   const patch = useCallback((p: Partial<AppState>) => dispatch({ type: 'patch', patch: p }), []);
   const reset = useCallback(() => dispatch({ type: 'reset' }), []);

@@ -76,12 +76,12 @@ export function SiteHeader() {
       </div>
 
       {/* Mobile / tablet nav — horizontal scroll */}
-      <nav className="lg:hidden flex gap-1 overflow-x-auto px-2 pb-2 border-t border-border">
+      <nav className="lg:hidden flex gap-1.5 overflow-x-auto px-2 pb-2 border-t border-border">
         {NAV.map(item => (
           <Link
             key={item.href}
             href={item.href}
-            className={`px-3 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap transition ${
+            className={`px-3.5 py-2.5 rounded-full text-[13px] font-semibold whitespace-nowrap transition ${
               isActive(item.href)
                 ? 'bg-navy text-gold'
                 : 'text-text-muted hover:bg-c-gray-100'
