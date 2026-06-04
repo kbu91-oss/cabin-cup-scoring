@@ -5,8 +5,34 @@ import { CountdownBanner } from '@/components/CountdownBanner';
 import { StoreProvider } from '@/lib/store';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://cabin-cup-scoring.vercel.app'),
   title: 'Cabin Cup 2026',
   description: 'Live scoreboard for the Cabin Cup — Pour It On',
+  openGraph: {
+    title: 'Cabin Cup 2026',
+    description: 'Live scoreboard · Pour It On · June 11–14',
+    url: 'https://cabin-cup-scoring.vercel.app',
+    siteName: 'Cabin Cup',
+    images: [
+      {
+        url: '/cabin-cup-logo.png',
+        width: 1024,
+        height: 1024,
+        alt: 'Cabin Cup logo',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary', // square thumbnail (iMessage uses this style)
+    title: 'Cabin Cup 2026',
+    description: 'Live scoreboard · Pour It On · June 11–14',
+    images: ['/cabin-cup-logo.png'],
+  },
+  icons: {
+    icon: '/cabin-cup-logo.png',
+    apple: '/cabin-cup-logo.png',
+  },
 };
 
 export const viewport: Viewport = {
