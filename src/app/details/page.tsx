@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { REQUIRED_VOTER_COUNT } from '@/lib/teams';
 
 export const metadata = { title: 'Details · Cabin Cup 2026' };
 
@@ -111,7 +112,7 @@ export default function DetailsPage() {
               Awarded to the team that crosses <strong>109 points</strong> first across all events.
             </Award>
             <Award name="🥇 Al Carbone MVP">
-              Individual award voted by the players. 1st place = 5 pts, 2nd = 3 pts, 3rd = 1 pt. 13
+              Individual award voted by the players. 1st place = 5 pts, 2nd = 3 pts, 3rd = 1 pt. {REQUIRED_VOTER_COUNT}{' '}
               ballots required to reveal results.
             </Award>
             <Award name="⛳ Golden Putter">
@@ -137,7 +138,7 @@ export default function DetailsPage() {
             </li>
             <li>Pick your top 3 — <strong>1st = 5 pts, 2nd = 3 pts, 3rd = 1 pt</strong>. Picks must be different players.</li>
             <li>Re-tapping your name lets you update your existing ballot. Your pill shows a ✓ once you&apos;ve voted.</li>
-            <li><strong>13 required voters</strong> · Glaicar is optional (departs early). The &ldquo;Reveal Now&rdquo; button unlocks once all 13 required ballots are in.</li>
+            <li><strong>{REQUIRED_VOTER_COUNT} required voters</strong> · Glaicar is optional (departs early). The &ldquo;Reveal Now&rdquo; button unlocks once all {REQUIRED_VOTER_COUNT} required ballots are in.</li>
             <li>Organizer can unlock early with the password (see <code className="bg-bg px-1.5 py-0.5 rounded text-[11px]">MVP_REVEAL_PASSWORD</code> in <code className="bg-bg px-1.5 py-0.5 rounded text-[11px]">src/lib/cup.ts</code>).</li>
           </UL>
         </Section>

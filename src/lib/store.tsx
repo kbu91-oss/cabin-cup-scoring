@@ -49,11 +49,15 @@ export type LunchOrder = {
   timestamp: number;
 };
 
+export type TravelMode = 'flying' | 'driving';
+
 export type TravelArrival = {
   playerId: string;         // voter.id (last name)
   date: string;             // YYYY-MM-DD
   time: string;             // HH:MM (24-hour)
-  notes?: string;           // e.g. "DL5121 from JFK · terminal 4"
+  mode?: TravelMode;        // flying or driving (optional for back-compat)
+  airport?: string;         // free text, only when mode === 'flying'
+  notes?: string;           // e.g. "DL5121, terminal 4" or "driving with Yuri"
   timestamp: number;
 };
 
@@ -88,6 +92,14 @@ type Action =
   | { type: 'patch'; patch: Partial<AppState> }
   | { type: 'reset' };
 
+// Fields that survive a "Reset all scores" — coordination state, not scoring.
+function preserveOnReset(state: AppState): Pick<AppState, 'lunchOrders' | 'travelArrivals'> {
+  return {
+    lunchOrders: state.lunchOrders,
+    travelArrivals: state.travelArrivals,
+  };
+}
+
 function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'set':
@@ -95,7 +107,7 @@ function reducer(state: AppState, action: Action): AppState {
     case 'patch':
       return { ...state, ...action.patch };
     case 'reset':
-      return initialState();
+      return { ...initialState(), ...preserveOnReset(state) };
   }
 }
 
@@ -193,6 +205,8 @@ function normaliseState(raw: unknown): AppState {
         playerId: t.playerId,
         date: t.date,
         time: t.time,
+        mode: t.mode === 'flying' || t.mode === 'driving' ? t.mode : undefined,
+        airport: typeof t.airport === 'string' ? t.airport : undefined,
         notes: typeof t.notes === 'string' ? t.notes : undefined,
         timestamp: typeof t.timestamp === 'number' ? t.timestamp : Date.now(),
       }));

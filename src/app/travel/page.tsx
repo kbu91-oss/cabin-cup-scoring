@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useStore, type TravelArrival } from '@/lib/store';
+import { useStore, type TravelArrival, type TravelMode } from '@/lib/store';
 import { VOTERS, TEAMS, type Voter } from '@/lib/teams';
 
 export default function TravelPage() {
@@ -46,6 +46,9 @@ export default function TravelPage() {
         />
         {selectedVoter ? (
           <ArrivalForm
+            // Key tied to player + existing entry forces a fresh form on switch,
+            // so we never write one player's notes onto another player's entry.
+            key={`${selectedVoter.id}:${myArrival?.timestamp ?? 'new'}`}
             voter={selectedVoter}
             existing={myArrival}
             onSave={save}
@@ -134,6 +137,8 @@ function ArrivalForm({
   const [minute, setMinute] = useState(initialTime.minute);
   const [ampm, setAmpm] = useState<'AM' | 'PM'>(initialTime.ampm);
 
+  const [mode, setMode] = useState<TravelMode | null>(existing?.mode ?? null);
+  const [airport, setAirport] = useState(existing?.airport ?? '');
   const [notes, setNotes] = useState(existing?.notes ?? '');
 
   function submit(e: React.FormEvent) {
@@ -143,6 +148,8 @@ function ArrivalForm({
       playerId: voter.id,
       date,
       time: toHHMM(hour12, minute, ampm),
+      mode: mode ?? undefined,
+      airport: mode === 'flying' && airport.trim() ? airport.trim() : undefined,
       notes: notes.trim() || undefined,
       timestamp: Date.now(),
     });
@@ -206,12 +213,37 @@ function ArrivalForm({
       </div>
 
       <div>
-        <Label>NOTES (airline, flight #, driving, etc.)</Label>
+        <Label>HOW ARE YOU GETTING HERE?</Label>
+        <div className="grid grid-cols-2 gap-2">
+          <ModeChoice label="✈️ Flying"  active={mode === 'flying'}  onClick={() => setMode('flying')} />
+          <ModeChoice label="🚗 Driving" active={mode === 'driving'} onClick={() => setMode('driving')} />
+        </div>
+      </div>
+
+      {mode === 'flying' ? (
+        <div>
+          <Label>FLYING INTO</Label>
+          <input
+            type="text"
+            value={airport}
+            onChange={e => setAirport(e.target.value)}
+            placeholder="e.g. Burlington (BTV), Albany (ALB), Adirondack Regional (SLK), Montreal (YUL)"
+            className="w-full px-3 py-2.5 rounded-xl border border-border text-sm bg-bg outline-none focus:border-navy"
+          />
+        </div>
+      ) : null}
+
+      <div>
+        <Label>NOTES {mode === 'flying' ? '(flight #, terminal, etc.)' : mode === 'driving' ? '(carpool, ETA buffer, etc.)' : '(airline, flight #, driving, etc.)'}</Label>
         <input
           type="text"
           value={notes}
           onChange={e => setNotes(e.target.value)}
-          placeholder="e.g. DL5121 from JFK · or · driving from Boston with Yuri"
+          placeholder={
+            mode === 'flying'  ? 'e.g. DL5121, terminal 4, picking up rental'
+            : mode === 'driving' ? 'e.g. driving with Yuri, may stop in Saratoga'
+            : 'Anything the group should know'
+          }
           className="w-full px-3 py-2.5 rounded-xl border border-border text-sm bg-bg outline-none focus:border-navy"
         />
       </div>
@@ -225,6 +257,28 @@ function ArrivalForm({
         </button>
       </div>
     </form>
+  );
+}
+
+function ModeChoice({
+  label, active, onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`px-3 py-2.5 rounded-xl border text-sm font-semibold transition ${
+        active
+          ? 'bg-navy text-gold border-navy'
+          : 'bg-surface text-text border-border hover:bg-c-gray-100'
+      }`}
+    >
+      {label}
+    </button>
   );
 }
 
@@ -290,16 +344,25 @@ function ArrivalRow({ arrival }: { arrival: TravelArrival }) {
   if (!voter) return null;
   const team = TEAMS[voter.team];
   const dotClass = voter.team === 'harvey' ? 'bg-navy' : 'bg-gold';
+  const modeIcon = arrival.mode === 'flying' ? '✈️' : arrival.mode === 'driving' ? '🚗' : null;
   return (
     <div className="flex items-start gap-3 py-1.5">
       <span className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${dotClass}`} title={team.name} />
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline justify-between gap-2 flex-wrap">
-          <div className="text-sm font-bold">{voter.display}</div>
+          <div className="text-sm font-bold inline-flex items-center gap-1.5">
+            {voter.display}
+            {modeIcon ? <span aria-hidden className="text-[11px]">{modeIcon}</span> : null}
+          </div>
           <div className="text-xs font-semibold text-text-muted whitespace-nowrap">
             {formatTime(arrival.time)}
           </div>
         </div>
+        {arrival.mode === 'flying' && arrival.airport ? (
+          <div className="text-[13px] text-text-muted leading-snug mt-0.5">
+            <span className="font-semibold text-text">Flying into:</span> {arrival.airport}
+          </div>
+        ) : null}
         {arrival.notes ? (
           <div className="text-[13px] text-text-muted leading-snug mt-0.5">{arrival.notes}</div>
         ) : null}

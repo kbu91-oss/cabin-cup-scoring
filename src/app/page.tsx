@@ -75,8 +75,9 @@ export default function ScoreboardPage() {
         </div>
         <h3 className="text-lg font-bold mb-1">Reset all scores?</h3>
         <p className="text-xs text-text-muted mb-4">
-          This wipes every match, hole, drinking-game winner, and MVP ballot back to zero —
-          for every device watching this scoreboard. Cannot be undone.
+          Wipes every match, hole, drinking-game winner, and MVP ballot back to zero —
+          for every device watching this scoreboard. Lunch orders and travel arrivals are
+          kept. Cannot be undone.
         </p>
 
         <label className="block text-[11px] font-bold tracking-wider text-text-muted mb-2">

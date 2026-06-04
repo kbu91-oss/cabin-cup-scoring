@@ -69,7 +69,7 @@ export function GolfView({ initialRound }: { initialRound?: RoundId }) {
       <div className="flex justify-between items-baseline flex-wrap gap-2 mt-1 mb-3">
         <h2 className="text-lg font-semibold">{ROUND_LABELS[round]}</h2>
         <span className="text-xs text-text-muted font-medium">
-          Harvey 7 (1 ghost) · Carbery 7 · 2v2 + 2v2 + 3v3 per round
+          Harvey 7 · Carbery 7 · 2v2 + 2v2 + 3v3 per round
         </span>
       </div>
 
