@@ -18,8 +18,7 @@ export default function TeamsPage() {
       <div className="mt-5 p-3.5 px-4 bg-surface border border-border border-l-[3px] border-l-gold rounded-lg text-[13px] text-text-muted leading-relaxed">
         <strong className="text-text">Roster notes:</strong> Mike Glaicar plays Friday golf only;
         Soren Jonzzon plays Saturday drinking games only — they&apos;re drafted as one combined
-        Carbery pick. <strong className="text-text">Ghost</strong> on Team Harvey is a floater
-        placeholder used to balance the rotation schedules at 7 v 7.
+        Carbery pick. Both rosters play 7 v 7 across the rotations.
       </div>
     </>
   );

@@ -30,10 +30,7 @@ export const TEAMS: { harvey: Team; carbery: Team } = {
       { display: 'Cory Hibbeler',    last: 'Hibbeler',    cls: 14, shirt: 'L', hcp: 10 },
       { display: 'Jake Meyers',      last: 'Meyers',      cls: 16, shirt: 'M', hcp: 14 },
       { display: 'KJ Tiefenwerth',   last: 'Tiefenwerth', cls: 17, shirt: 'L', hcp: 16 },
-      {
-        display: 'Ghost', last: 'Ghost', cls: null, shirt: null, hcp: null,
-        note: 'Floater · balances roster to 7 for rotations',
-      },
+      { display: 'Alex Barron',      last: 'Barron',      cls: null, shirt: 'XL', hcp: 25 },
     ],
   },
   carbery: {
