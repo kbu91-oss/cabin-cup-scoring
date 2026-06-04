@@ -228,9 +228,27 @@ function loadFromStorage(): AppState | null {
   }
 }
 
+// We track the wall-clock timestamp of the last local write so that on hydrate
+// we can compare against Supabase's row.updated_at and not let a stale remote
+// clobber newer local edits (this happens when the user closes the page or
+// stops the dev server before the debounced upsert flushes).
+const STORAGE_META_KEY = 'cabin-cup-next-v1-meta';
+
+function loadLocalUpdatedAt(): number {
+  try {
+    const raw = localStorage.getItem(STORAGE_META_KEY);
+    if (!raw) return 0;
+    const v = JSON.parse(raw) as { updatedAt?: number };
+    return typeof v.updatedAt === 'number' ? v.updatedAt : 0;
+  } catch {
+    return 0;
+  }
+}
+
 function saveToStorage(state: AppState) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_META_KEY, JSON.stringify({ updatedAt: Date.now() }));
   } catch {
     /* ignore */
   }
@@ -281,7 +299,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       try {
         const { data, error } = await supabase
           .from('cup_state')
-          .select('state')
+          .select('state, updated_at')
           .eq('year', CUP_YEAR)
           .maybeSingle();
         if (cancelled) return;
@@ -291,10 +309,28 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           return;
         }
         if (data?.state) {
-          const remote = normaliseState(data.state);
-          const json = JSON.stringify(remote);
-          lastSyncedJsonRef.current = json;
-          dispatch({ type: 'set', state: remote });
+          // Compare timestamps. If local is newer than remote, the local
+          // device has unsynced edits — push them up instead of clobbering.
+          const remoteUpdatedAt = typeof data.updated_at === 'string'
+            ? new Date(data.updated_at).getTime()
+            : 0;
+          const localUpdatedAt = loadLocalUpdatedAt();
+
+          // 2s tolerance to avoid bouncing on near-simultaneous edits.
+          if (localUpdatedAt > remoteUpdatedAt + 2000) {
+            const localState = stateRef.current;
+            lastSyncedJsonRef.current = JSON.stringify(localState);
+            await supabase.from('cup_state').upsert({
+              year: CUP_YEAR,
+              state: localState,
+              updated_at: new Date(localUpdatedAt).toISOString(),
+            });
+          } else {
+            const remote = normaliseState(data.state);
+            const json = JSON.stringify(remote);
+            lastSyncedJsonRef.current = json;
+            dispatch({ type: 'set', state: remote });
+          }
         } else {
           // No row yet — seed with whatever we have locally.
           const seed = stateRef.current;
@@ -349,6 +385,8 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     if (json === lastSyncedJsonRef.current) return;
 
     if (writeTimerRef.current) window.clearTimeout(writeTimerRef.current);
+    // 150ms debounce — short enough to almost always flush before tab close,
+    // long enough to coalesce rapid taps on a single match into one upsert.
     writeTimerRef.current = window.setTimeout(async () => {
       // Optimistically advance the sync marker — if the write fails we roll it
       // back so the next state change (or our retry tick) re-attempts the push.
@@ -364,7 +402,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       } else {
         setSyncStatus('live');
       }
-    }, 400);
+    }, 150);
   }, [state, hydrated]);
 
   // While in error state, every 5s: (a) retry any pending write, or
