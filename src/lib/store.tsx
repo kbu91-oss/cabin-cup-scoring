@@ -201,15 +201,19 @@ function normaliseState(raw: unknown): AppState {
         && typeof t.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(t.date)
         && typeof t.time === 'string' && /^\d{2}:\d{2}$/.test(t.time)
       )
-      .map(t => ({
-        playerId: t.playerId,
-        date: t.date,
-        time: t.time,
-        mode: t.mode === 'flying' || t.mode === 'driving' ? t.mode : undefined,
-        airport: typeof t.airport === 'string' ? t.airport : undefined,
-        notes: typeof t.notes === 'string' ? t.notes : undefined,
-        timestamp: typeof t.timestamp === 'number' ? t.timestamp : Date.now(),
-      }));
+      .map(t => {
+        const mode = t.mode === 'flying' || t.mode === 'driving' ? t.mode : undefined;
+        return {
+          playerId: t.playerId,
+          date: t.date,
+          time: t.time,
+          mode,
+          // Only keep airport when actually flying — otherwise it's stale ghost data.
+          airport: mode === 'flying' && typeof t.airport === 'string' ? t.airport : undefined,
+          notes: typeof t.notes === 'string' ? t.notes : undefined,
+          timestamp: typeof t.timestamp === 'number' ? t.timestamp : Date.now(),
+        };
+      });
   }
   return next;
 }

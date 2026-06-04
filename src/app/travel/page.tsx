@@ -46,9 +46,9 @@ export default function TravelPage() {
         />
         {selectedVoter ? (
           <ArrivalForm
-            // Key tied to player + existing entry forces a fresh form on switch,
-            // so we never write one player's notes onto another player's entry.
-            key={`${selectedVoter.id}:${myArrival?.timestamp ?? 'new'}`}
+            // Key only on player id — remounts on player switch (so notes don't
+            // leak across players) but stays mounted across saves (no focus loss).
+            key={selectedVoter.id}
             voter={selectedVoter}
             existing={myArrival}
             onSave={save}
