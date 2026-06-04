@@ -2,7 +2,7 @@
 
 Live scoreboard, MVP voting, schedule, team rosters, history, and detail reference for the 2026 Cabin Cup ("Pour It On" · est. 2010).
 
-Built with Next.js 16 + React 19 + Tailwind 4 + TypeScript. State is currently device-local (localStorage). Cross-device sync via Supabase is the next planned upgrade.
+Built with Next.js 16 + React 19 + Tailwind 4 + TypeScript. State syncs across devices via Supabase realtime, with localStorage as an offline cache.
 
 ## Run locally
 
@@ -12,6 +12,18 @@ npm run dev
 ```
 
 Open <http://localhost:3000>.
+
+## Cross-device sync (Supabase)
+
+The app works without Supabase configured — it'll just use localStorage on one device. To turn on multi-device sync:
+
+1. Create a free project at <https://supabase.com>.
+2. In the Supabase SQL Editor, paste and run [`supabase-schema.sql`](./supabase-schema.sql).
+3. In Supabase → Project Settings → API, copy the **Project URL** and the **anon public key**.
+4. Locally: copy `.env.local.example` to `.env.local` and paste both values.
+5. In Vercel: Project Settings → Environment Variables, add the same two as `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Redeploy.
+
+The header pill in the top right shows the sync state: `LIVE` (connected, broadcasting), `SYNCING` (initial handshake), `SYNC ERROR` (Supabase unreachable, local edits will retry), or `LOCAL` (no Supabase env vars set).
 
 ## Pages
 

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useStore, type SyncStatus } from '@/lib/store';
 
 const NAV = [
   { href: '/',         label: 'Scoreboard' },
@@ -12,8 +13,17 @@ const NAV = [
   { href: '/history',  label: 'History' },
 ];
 
+const STATUS_STYLES: Record<SyncStatus, { bg: string; border: string; dot: string; text: string; label: string; pulse: boolean }> = {
+  live:       { bg: 'bg-green-50',   border: 'border-green-200',  dot: 'bg-green-500',  text: 'text-green-700',  label: 'LIVE',       pulse: true  },
+  connecting: { bg: 'bg-amber-50',   border: 'border-amber-200',  dot: 'bg-amber-500',  text: 'text-amber-700',  label: 'SYNCING',    pulse: true  },
+  error:      { bg: 'bg-red-soft',   border: 'border-red-border', dot: 'bg-red-500',    text: 'text-red-600',    label: 'SYNC ERROR', pulse: false },
+  offline:    { bg: 'bg-c-gray-100', border: 'border-c-gray-200', dot: 'bg-c-gray-400', text: 'text-text-muted', label: 'LOCAL',      pulse: false },
+};
+
 export function SiteHeader() {
   const pathname = usePathname();
+  const { syncStatus } = useStore();
+  const s = STATUS_STYLES[syncStatus];
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
 
@@ -49,9 +59,17 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-1.5 bg-red-soft border border-red-border rounded-full px-3 py-1.5 shrink-0">
-          <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse-dot" />
-          <span className="text-[11px] font-bold text-red-600 tracking-wider">LIVE</span>
+        <div
+          className={`flex items-center gap-1.5 ${s.bg} border ${s.border} rounded-full px-3 py-1.5 shrink-0`}
+          title={
+            syncStatus === 'live'       ? 'Connected to live scoreboard — changes sync across devices'
+            : syncStatus === 'connecting' ? 'Connecting to live scoreboard…'
+            : syncStatus === 'error'    ? 'Sync error — your changes are saved locally and will retry'
+            :                             'Local mode — changes save only to this device'
+          }
+        >
+          <span className={`w-2 h-2 ${s.dot} rounded-full ${s.pulse ? 'animate-pulse-dot' : ''}`} />
+          <span className={`text-[11px] font-bold ${s.text} tracking-wider`}>{s.label}</span>
         </div>
       </div>
 
