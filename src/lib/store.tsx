@@ -21,12 +21,31 @@ import {
 } from './matches';
 import { VOTERS } from './teams';
 import { supabase, SUPABASE_ENABLED, CUP_YEAR } from './supabase';
+import { MENU_BY_ID, type SubSize } from './menu';
 
 export type MvpVote = {
   voterId: string;
   first: string | null;
   second: string | null;
   third: string | null;
+  timestamp: number;
+};
+
+export type LunchLineItem = {
+  // Stable id (uuid-ish) so items can be edited/removed without re-keying.
+  lineId: string;
+  itemId: string;           // matches MenuItem.id
+  size?: SubSize;           // for sized items only
+  bread?: string;
+  cheese?: string;
+  vegetables?: string[];
+  condiments?: string[];
+  notes?: string;
+};
+
+export type LunchOrder = {
+  playerId: string;         // voter.id (last name) — uniquely identifies the player
+  items: LunchLineItem[];
   timestamp: number;
 };
 
@@ -37,6 +56,7 @@ export type AppState = {
   beerPongStatus: 'in-progress' | 'final';
   mvpVotes: MvpVote[];
   mvpResultsRevealed: boolean;
+  lunchOrders: LunchOrder[];
 };
 
 function initialState(): AppState {
@@ -47,6 +67,7 @@ function initialState(): AppState {
     beerPongStatus: 'in-progress',
     mvpVotes: [],
     mvpResultsRevealed: false,
+    lunchOrders: [],
   };
 }
 
@@ -126,6 +147,28 @@ function normaliseState(raw: unknown): AppState {
         second: typeof v.second === 'string' ? v.second : null,
         third: typeof v.third === 'string' ? v.third : null,
         timestamp: typeof v.timestamp === 'number' ? v.timestamp : Date.now(),
+      }));
+  }
+  if (Array.isArray(data.lunchOrders)) {
+    next.lunchOrders = data.lunchOrders
+      .filter((o): o is LunchOrder => !!o && typeof o === 'object' && typeof o.playerId === 'string' && validIds.has(o.playerId))
+      .map(o => ({
+        playerId: o.playerId,
+        timestamp: typeof o.timestamp === 'number' ? o.timestamp : Date.now(),
+        items: Array.isArray(o.items)
+          ? o.items
+              .filter(it => !!it && typeof it === 'object' && typeof it.itemId === 'string' && MENU_BY_ID[it.itemId])
+              .map(it => ({
+                lineId: typeof it.lineId === 'string' ? it.lineId : `line-${Math.random().toString(36).slice(2, 10)}`,
+                itemId: it.itemId,
+                size: it.size === '6' || it.size === '12' ? it.size : undefined,
+                bread: typeof it.bread === 'string' ? it.bread : undefined,
+                cheese: typeof it.cheese === 'string' ? it.cheese : undefined,
+                vegetables: Array.isArray(it.vegetables) ? it.vegetables.filter(v => typeof v === 'string') : undefined,
+                condiments: Array.isArray(it.condiments) ? it.condiments.filter(v => typeof v === 'string') : undefined,
+                notes: typeof it.notes === 'string' ? it.notes : undefined,
+              }))
+          : [],
       }));
   }
   return next;

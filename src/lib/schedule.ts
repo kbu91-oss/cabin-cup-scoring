@@ -19,7 +19,8 @@ export type ScheduleLink =
   | 'beer-die'
   | 'bags'
   | 'beer-pong'
-  | 'mvp';
+  | 'mvp'
+  | 'lunch';
 
 export type ScheduleDay = {
   id: string;
@@ -57,9 +58,14 @@ export const SCHEDULE_DAYS: ScheduleDay[] = [
     tag: 'Golf Day',
     events: [
       { time: '7:30am', title: 'Wakey Wakey' },
-      { time: '8:00am', title: 'Breakfast sandwiches at Cabin', sub: 'Adirondack Corner Store' },
+      {
+        time: '8:00am',
+        title: 'Catered breakfast at Cabin',
+        sub: 'ADK Diner',
+        notes: ['Scrambled eggs', 'Pancakes', 'Bacon', 'Breakfast potatoes'],
+      },
       { time: '9:24am', title: 'First Tee Off — Mountain Course', sub: 'Mountain Front 9 → Mountain Back 9', link: 'golf-mountain' },
-      { time: '2:15pm', title: 'Lunch at Lake Placid Club', sub: 'Adirondack Corner Store' },
+      { time: '2:15pm', title: 'Lunch at Lake Placid Club', sub: 'Adirondack Corner Store · order in advance', link: 'lunch' },
       { time: '3:00pm', title: '2nd 18 Tee Off — Links Course', sub: 'Links Front 9 → Links Back 9', link: 'golf-links' },
       { time: '7:30pm', title: 'Depart course for cabin' },
       { time: '7:45pm', title: 'Pizza and wings delivered to Cabin' },
@@ -72,7 +78,7 @@ export const SCHEDULE_DAYS: ScheduleDay[] = [
     date: 'June 2026 · TBD',
     tag: 'Backyard Games',
     events: [
-      { time: '8:00am – 9:30am', title: 'Breakfast' },
+      { time: '8:00am – 9:30am', title: 'Breakfast sandwiches at Cabin', sub: 'ADK Diner' },
       {
         time: '11:00am',
         title: 'Backyard competitions begin',
@@ -112,5 +118,6 @@ export function linkHrefFor(link?: ScheduleLink): { href: string; hash?: string 
     case 'bags':                return { href: '/', hash: 'event=bags' };
     case 'beer-pong':           return { href: '/', hash: 'event=beer-pong' };
     case 'mvp':                 return { href: '/mvp' };
+    case 'lunch':               return { href: '/lunch' };
   }
 }

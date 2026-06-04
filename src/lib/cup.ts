@@ -9,6 +9,10 @@ export const CUP_END = new Date('2026-06-21T19:00:00-04:00'); // Sun evening
 // Organizer password to reveal MVP voting results early.
 export const MVP_REVEAL_PASSWORD = 'cabincup';
 
+// Organizer password required to wipe all scores. Separate so you can rotate
+// it without affecting MVP reveal access (or vice versa).
+export const RESET_SCORES_PASSWORD = 'cabincup';
+
 // Cup scoring math
 export const GOLF_POINTS = 108;
 export const DRINKING_POINTS_PER_WIN = 2;
@@ -24,8 +28,8 @@ export const MVP_VOTE_WEIGHTS: Record<'first' | 'second' | 'third', number> = {
 };
 
 export const EVENT_IDS = [
-  'golf',
   'captains-beer-pong',
+  'golf',
   'beer-die',
   'bags',
   'beer-pong',

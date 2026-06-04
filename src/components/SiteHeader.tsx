@@ -11,6 +11,7 @@ const NAV = [
   { href: '/schedule', label: 'Schedule' },
   { href: '/details',  label: 'Details' },
   { href: '/history',  label: 'History' },
+  { href: '/lunch',    label: 'Lunch Order' },
 ];
 
 const STATUS_STYLES: Record<SyncStatus, { bg: string; border: string; dot: string; text: string; label: string; pulse: boolean }> = {
