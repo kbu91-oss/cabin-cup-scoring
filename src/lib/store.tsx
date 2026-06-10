@@ -96,8 +96,42 @@ type Action =
   | { type: 'patch'; patch: Partial<AppState> }
   | { type: 'reset' };
 
-function preserveOnReset(state: AppState): Pick<AppState, 'lunchOrders' | 'travelArrivals'> {
+// Things that survive a "Reset all scores" — coordination state and captain
+// picks, never the scores themselves. Captain picks are the tournament's
+// pre-game setup; wiping them on every reset would mean re-entering 12 + 54
+// matchups every time we want to clear scores.
+function preserveOnReset(state: AppState): Partial<AppState> {
+  const fresh = initialState();
+
+  // Overlay captain picks back onto the fresh golf matches
+  const golfMatches = fresh.golfMatches.map(m => {
+    const existing = state.golfMatches.find(x => x.id === m.id);
+    if (!existing) return m;
+    return {
+      ...m,
+      customHarvey: existing.customHarvey,
+      customCarbery: existing.customCarbery,
+    };
+  });
+
+  // Overlay captain picks back onto the fresh drinking matches
+  const drinkingMatches = { ...fresh.drinkingMatches };
+  (Object.keys(drinkingMatches) as DrinkingEventId[]).forEach(eventId => {
+    const existingEvent = state.drinkingMatches[eventId] ?? {};
+    Object.keys(drinkingMatches[eventId]).forEach(matchId => {
+      const existing = existingEvent[matchId];
+      if (!existing) return;
+      drinkingMatches[eventId][matchId] = {
+        ...drinkingMatches[eventId][matchId],
+        customHarvey: existing.customHarvey,
+        customCarbery: existing.customCarbery,
+      };
+    });
+  });
+
   return {
+    golfMatches,
+    drinkingMatches,
     lunchOrders: state.lunchOrders,
     travelArrivals: state.travelArrivals,
   };

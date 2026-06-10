@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useStore } from '@/lib/store';
 import { ROUND_LABELS, type RoundId, fmt } from '@/lib/cup';
 import { matchScores } from '@/lib/scoring';
@@ -9,10 +9,36 @@ import { CaptainPickModal, type CaptainPickTarget } from './CaptainPickModal';
 import type { GolfMatch } from '@/lib/matches';
 
 const ROUND_IDS: RoundId[] = ['mountain-front', 'mountain-back', 'links-front', 'links-back'];
+const LAST_ROUND_KEY = 'cabin-cup-last-round';
+
+// Pull the last-viewed round from localStorage so refresh doesn't snap back to
+// Mountain Front 9. URL hash (?round=...) still wins if explicitly provided.
+function loadLastRound(): RoundId | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const v = localStorage.getItem(LAST_ROUND_KEY);
+    return ROUND_IDS.includes(v as RoundId) ? (v as RoundId) : null;
+  } catch {
+    return null;
+  }
+}
 
 export function GolfView({ initialRound }: { initialRound?: RoundId }) {
   const { state, patch } = useStore();
-  const [round, setRound] = useState<RoundId>(initialRound ?? 'mountain-front');
+  // Initial round picks: URL hash > localStorage > default to Mountain Front 9.
+  const [round, setRound] = useState<RoundId>(
+    () => initialRound ?? loadLastRound() ?? 'mountain-front'
+  );
+
+  // Persist the user's round choice so it survives refreshes.
+  useEffect(() => {
+    try {
+      localStorage.setItem(LAST_ROUND_KEY, round);
+    } catch {
+      /* ignore */
+    }
+  }, [round]);
+
   const [holeModal, setHoleModal] = useState<{ matchId: number; holeIdx: number } | null>(null);
   const [captainTarget, setCaptainTarget] = useState<CaptainPickTarget | null>(null);
 
