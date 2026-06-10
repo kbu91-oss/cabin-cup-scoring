@@ -18,7 +18,7 @@ Open <http://localhost:3000>.
 The app works without Supabase configured — it'll just use localStorage on one device. To turn on multi-device sync:
 
 1. Create a free project at <https://supabase.com>.
-2. In the Supabase SQL Editor, paste and run [`supabase-schema.sql`](./supabase-schema.sql).
+2. In the Supabase SQL Editor, paste and run [`supabase-schema-v2.sql`](./supabase-schema-v2.sql). This creates the per-row tables (`golf_matches`, `drinking_matches`, `cup_meta`, `mvp_votes`, `lunch_orders`, `travel_arrivals`) with the right RLS, realtime, and replica-identity settings.
 3. In Supabase → Project Settings → API, copy the **Project URL** and the **anon public key**.
 4. Locally: copy `.env.local.example` to `.env.local` and paste both values.
 5. In Vercel: Project Settings → Environment Variables, add the same two as `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Redeploy.

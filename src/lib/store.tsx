@@ -552,22 +552,22 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setHydrated(true);
   }, []);
 
-  // 2) Fetch from Supabase + subscribe to realtime changes.
+  // 2) Fetch from Supabase, THEN subscribe to realtime. Subscribing before
+  // the initial fetch resolves creates a race: an incoming row update lands
+  // and updates state, then the fetch overwrites it with the snapshot taken
+  // just before the row event arrived. Order matters here.
   useEffect(() => {
     if (!hydrated || !supabase) return;
 
     let cancelled = false;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
 
     (async () => {
       try {
         const remote = await fetchAllRows();
         if (cancelled || !remote) return;
 
-        // Did any per-row table actually contain a row? If yes, remote is the
-        // authoritative shared state and we adopt it. If no, this is a fresh
-        // Supabase and we push our local state up to seed it.
         const remoteIsEmpty = isEmptyState(remote);
-
         if (!remoteIsEmpty) {
           lastSyncedRef.current = remote;
           dispatch({ type: 'set', state: remote });
@@ -579,7 +579,30 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           }
           lastSyncedRef.current = seed;
         }
+        if (cancelled) return;
         setSyncStatus('live');
+
+        // Now safe to subscribe — no race against the fetch.
+        channel = supabase!.channel(`cup:${CUP_YEAR}`);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const on = (table: string, handler: (p: any) => void) =>
+          channel!.on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table, filter: `year=eq.${CUP_YEAR}` },
+            handler
+          );
+
+        on('golf_matches',     handleGolfChange);
+        on('drinking_matches', handleDrinkingChange);
+        on('cup_meta',         handleMetaChange);
+        on('mvp_votes',        handleMvpChange);
+        on('lunch_orders',     handleLunchChange);
+        on('travel_arrivals',  handleTravelChange);
+
+        channel.subscribe(status => {
+          if (status === 'SUBSCRIBED') setSyncStatus('live');
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setSyncStatus('error');
+        });
       } catch (err) {
         if (!cancelled) {
           console.error('Supabase init error', err);
@@ -588,43 +611,24 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       }
     })();
 
-    // One channel, multiple table listeners.
-    const channel = supabase.channel(`cup:${CUP_YEAR}`);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const on = (table: string, handler: (p: any) => void) =>
-      channel.on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table, filter: `year=eq.${CUP_YEAR}` },
-        handler
-      );
-
-    on('golf_matches',     handleGolfChange);
-    on('drinking_matches', handleDrinkingChange);
-    on('cup_meta',         handleMetaChange);
-    on('mvp_votes',        handleMvpChange);
-    on('lunch_orders',     handleLunchChange);
-    on('travel_arrivals',  handleTravelChange);
-
-    channel.subscribe(status => {
-      if (status === 'SUBSCRIBED') setSyncStatus('live');
-      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setSyncStatus('error');
-    });
-
-    const sb = supabase;
     return () => {
       cancelled = true;
-      sb.removeChannel(channel);
+      if (channel && supabase) supabase.removeChannel(channel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated]);
 
   // --- Realtime row handlers ---
 
+  // Apply a single per-row change from realtime:
+  // - update view state by merging into the current state (preserves the
+  //   user's other unsynced edits)
+  // - update lastSyncedRef by merging into the LAST KNOWN SYNCED state, NOT
+  //   into the current state. Otherwise we'd mark the user's pending edits
+  //   as "already synced" and the persist effect would drop them.
   function applyMerged(merge: (s: AppState) => AppState) {
-    const merged = merge(stateRef.current);
-    lastSyncedRef.current = merged;
-    dispatch({ type: 'set', state: merged });
+    lastSyncedRef.current = merge(lastSyncedRef.current);
+    dispatch({ type: 'set', state: merge(stateRef.current) });
   }
 
   function handleGolfChange(payload: { eventType: string; new: GolfRow; old: GolfRow | null }) {
