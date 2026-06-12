@@ -19,9 +19,18 @@ import {
   type DrinkingMatchState,
   DRINKING_MATCH_LISTS,
 } from './matches';
-import { VOTERS } from './teams';
+import { VOTERS, HARVEY_ROSTER, TEAMS } from './teams';
 import { supabase, SUPABASE_ENABLED, CUP_YEAR } from './supabase';
 import { MENU_BY_ID, type SubSize } from './menu';
+
+// All Carbery player IDs (golf + drinking rosters merged so any valid Carbery
+// name passes; lets the modal show whichever subset is appropriate per event).
+const CARBERY_ALL = (() => {
+  const set = new Set<string>([TEAMS.carbery.captain.last]);
+  TEAMS.carbery.players.forEach(p => set.add(p.last));
+  return set;
+})();
+const HARVEY_SET = new Set<string>(HARVEY_ROSTER);
 
 // ---------------------------------------------------------------------------
 // Types — unchanged from previous versions; rest of app should not care that
@@ -210,11 +219,13 @@ function normaliseGolfMatch(saved: Partial<GolfMatch>, base: GolfMatch): GolfMat
     ...base,
     holes: Array.isArray(saved.holes) && saved.holes.length === 9 ? saved.holes : base.holes,
     status: saved.status === 'Final' || saved.status === 'In Progress' ? saved.status : base.status,
+    // Filter captain picks to current roster — drops names of players who got
+    // removed from the team (e.g., Barron after he no-showed).
     customHarvey: Array.isArray(saved.customHarvey)
-      ? (saved.customHarvey as string[]).filter(x => typeof x === 'string')
+      ? (saved.customHarvey as string[]).filter(x => typeof x === 'string' && HARVEY_SET.has(x))
       : base.customHarvey,
     customCarbery: Array.isArray(saved.customCarbery)
-      ? (saved.customCarbery as string[]).filter(x => typeof x === 'string')
+      ? (saved.customCarbery as string[]).filter(x => typeof x === 'string' && CARBERY_ALL.has(x))
       : base.customCarbery,
   };
 }
@@ -223,11 +234,12 @@ function normaliseDrinkingMatch(s: DrinkingMatchState): DrinkingMatchState {
   return {
     winner: s.winner === 'harvey' || s.winner === 'carbery' ? s.winner : null,
     status: s.status === 'final' ? 'final' : 'in-progress',
+    // Filter captain picks to current roster — drops removed players (e.g. Barron).
     customHarvey: Array.isArray(s.customHarvey)
-      ? s.customHarvey.filter(x => typeof x === 'string')
+      ? s.customHarvey.filter(x => typeof x === 'string' && HARVEY_SET.has(x))
       : null,
     customCarbery: Array.isArray(s.customCarbery)
-      ? s.customCarbery.filter(x => typeof x === 'string')
+      ? s.customCarbery.filter(x => typeof x === 'string' && CARBERY_ALL.has(x))
       : null,
   };
 }

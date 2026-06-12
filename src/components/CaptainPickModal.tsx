@@ -45,6 +45,8 @@ export function CaptainPickModal({
     if (!target) return 2;
     if (target.kind === 'golf') {
       const m = state.golfMatches.find(x => x.id === target.matchId);
+      // 2v3 = Harvey picks 2, Carbery picks 3
+      if (m?.format === '2v3') return target.team === 'harvey' ? 2 : 3;
       return m?.format === '3v3' ? 3 : 2;
     }
     return 2;

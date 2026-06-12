@@ -1,7 +1,7 @@
 import type { RoundId } from './cup';
 
 // === GOLF ===
-export type GolfMatchFormat = '2v2' | '3v3';
+export type GolfMatchFormat = '2v2' | '3v3' | '2v3';
 export type GolfMatchStatus = 'In Progress' | 'Final';
 
 export type GolfMatch = {
@@ -34,16 +34,16 @@ const makeGolfMatch = (
 export const INITIAL_GOLF_MATCHES: GolfMatch[] = [
   makeGolfMatch(1, 'mountain-front', 1, '2v2'),
   makeGolfMatch(2, 'mountain-front', 1, '2v2'),
-  makeGolfMatch(3, 'mountain-front', 1, '3v3'),
+  makeGolfMatch(3, 'mountain-front', 1, '2v3'),
   makeGolfMatch(4, 'mountain-back', 10, '2v2'),
   makeGolfMatch(5, 'mountain-back', 10, '2v2'),
-  makeGolfMatch(6, 'mountain-back', 10, '3v3'),
+  makeGolfMatch(6, 'mountain-back', 10, '2v3'),
   makeGolfMatch(7, 'links-front', 1, '2v2'),
   makeGolfMatch(8, 'links-front', 1, '2v2'),
-  makeGolfMatch(9, 'links-front', 1, '3v3'),
+  makeGolfMatch(9, 'links-front', 1, '2v3'),
   makeGolfMatch(10, 'links-back', 10, '2v2'),
   makeGolfMatch(11, 'links-back', 10, '2v2'),
-  makeGolfMatch(12, 'links-back', 10, '3v3'),
+  makeGolfMatch(12, 'links-back', 10, '2v3'),
 ];
 
 // === DRINKING ===
@@ -67,32 +67,32 @@ const SCHEDULED: Record<DrinkingEventId, { harvey: string; carbery: string; slot
     { harvey: 'Harvey & Bouharevich',     carbery: 'Carbery & Bui',         slot: 1 },
     { harvey: 'Arnt & Hibbeler',          carbery: 'Luczyk & Sanner',        slot: 1 },
     { harvey: 'Meyers & Tiefenwerth',     carbery: 'Robinson & Hilbrich',   slot: 2 },
-    { harvey: 'Barron & Harvey',           carbery: 'Soren & Carbery',       slot: 2 },
+    { harvey: 'Hibbeler & Harvey',         carbery: 'Soren & Carbery',       slot: 2 },
     { harvey: 'Bouharevich & Arnt',       carbery: 'Bui & Luczyk',           slot: 3 },
     { harvey: 'Hibbeler & Meyers',        carbery: 'Sanner & Robinson',     slot: 3 },
-    { harvey: 'Tiefenwerth & Barron',      carbery: 'Hilbrich & Soren',      slot: 4 },
+    { harvey: 'Tiefenwerth & Bouharevich', carbery: 'Hilbrich & Soren',      slot: 4 },
     { harvey: 'Harvey & Arnt',            carbery: 'Carbery & Luczyk',       slot: 4 },
     { harvey: 'Bouharevich & Hibbeler',   carbery: 'Bui & Sanner',          slot: 5 },
-    { harvey: 'Meyers & Barron',           carbery: 'Robinson & Soren',      slot: 5 },
+    { harvey: 'Meyers & Harvey',           carbery: 'Robinson & Soren',      slot: 5 },
     { harvey: 'Tiefenwerth & Harvey',     carbery: 'Hilbrich & Carbery',    slot: 6 },
     { harvey: 'Arnt & Meyers',            carbery: 'Luczyk & Robinson',      slot: 6 },
     { harvey: 'Hibbeler & Tiefenwerth',   carbery: 'Sanner & Hilbrich',     slot: 7 },
-    { harvey: 'Bouharevich & Barron',      carbery: 'Bui & Soren',           slot: 7 },
+    { harvey: 'Bouharevich & Meyers',     carbery: 'Bui & Soren',           slot: 7 },
   ],
   'bags': [
     { harvey: 'Harvey & Hibbeler',          carbery: 'Carbery & Sanner',      slot: 1 },
     { harvey: 'Bouharevich & Meyers',       carbery: 'Bui & Robinson',        slot: 1 },
     { harvey: 'Harvey & Meyers',            carbery: 'Carbery & Robinson',    slot: 2 },
     { harvey: 'Bouharevich & Tiefenwerth',  carbery: 'Bui & Hilbrich',        slot: 2 },
-    { harvey: 'Arnt & Barron',               carbery: 'Luczyk & Soren',         slot: 3 },
+    { harvey: 'Arnt & Tiefenwerth',         carbery: 'Luczyk & Soren',         slot: 3 },
     { harvey: 'Bouharevich & Hibbeler',     carbery: 'Robinson & Hilbrich',   slot: 3 },
-    { harvey: 'Hibbeler & Barron',           carbery: 'Sanner & Soren',        slot: 4 },
+    { harvey: 'Hibbeler & Meyers',          carbery: 'Sanner & Soren',        slot: 4 },
     { harvey: 'Arnt & Tiefenwerth',         carbery: 'Luczyk & Hilbrich',      slot: 4 },
     { harvey: 'Harvey & Arnt',              carbery: 'Bui & Sanner',          slot: 5 },
     { harvey: 'Meyers & Tiefenwerth',       carbery: 'Carbery & Luczyk',       slot: 5 },
-    { harvey: 'Harvey & Barron',             carbery: 'Luczyk & Robinson',      slot: 6 },
+    { harvey: 'Harvey & Hibbeler',          carbery: 'Luczyk & Robinson',      slot: 6 },
     { harvey: 'Arnt & Meyers',              carbery: 'Carbery & Soren',       slot: 6 },
-    { harvey: 'Bouharevich & Barron',        carbery: 'Sanner & Hilbrich',     slot: 7 },
+    { harvey: 'Bouharevich & Arnt',         carbery: 'Sanner & Hilbrich',     slot: 7 },
     { harvey: 'Hibbeler & Tiefenwerth',     carbery: 'Bui & Soren',           slot: 7 },
   ],
   'beer-pong': [
@@ -100,15 +100,15 @@ const SCHEDULED: Record<DrinkingEventId, { harvey: string; carbery: string; slot
     { harvey: 'Arnt & Hibbeler',            carbery: 'Carbery & Bui',         slot: 1 },
     { harvey: 'Bouharevich & Arnt',         carbery: 'Sanner & Robinson',     slot: 2 },
     { harvey: 'Hibbeler & Meyers',          carbery: 'Bui & Luczyk',           slot: 2 },
-    { harvey: 'Tiefenwerth & Barron',        carbery: 'Robinson & Soren',      slot: 3 },
+    { harvey: 'Tiefenwerth & Meyers',       carbery: 'Robinson & Soren',      slot: 3 },
     { harvey: 'Harvey & Hibbeler',          carbery: 'Hilbrich & Carbery',    slot: 3 },
-    { harvey: 'Meyers & Barron',             carbery: 'Hilbrich & Soren',      slot: 4 },
+    { harvey: 'Meyers & Arnt',              carbery: 'Hilbrich & Soren',      slot: 4 },
     { harvey: 'Tiefenwerth & Harvey',       carbery: 'Carbery & Sanner',      slot: 4 },
     { harvey: 'Harvey & Meyers',            carbery: 'Bui & Robinson',        slot: 5 },
     { harvey: 'Bouharevich & Tiefenwerth',  carbery: 'Luczyk & Soren',         slot: 5 },
     { harvey: 'Bouharevich & Meyers',       carbery: 'Carbery & Robinson',    slot: 6 },
-    { harvey: 'Arnt & Barron',               carbery: 'Bui & Hilbrich',        slot: 6 },
-    { harvey: 'Hibbeler & Barron',           carbery: 'Luczyk & Hilbrich',      slot: 7 },
+    { harvey: 'Arnt & Harvey',              carbery: 'Bui & Hilbrich',        slot: 6 },
+    { harvey: 'Hibbeler & Bouharevich',     carbery: 'Luczyk & Hilbrich',      slot: 7 },
     { harvey: 'Arnt & Tiefenwerth',         carbery: 'Sanner & Soren',        slot: 7 },
   ],
 };
