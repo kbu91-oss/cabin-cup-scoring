@@ -10,13 +10,37 @@ import { DrinkingView } from '@/components/DrinkingView';
 import { CaptainsBeerPongView } from '@/components/CaptainsBeerPongView';
 import { Modal } from '@/components/Modal';
 
+const LAST_EVENT_KEY = 'cabin-cup-last-event';
+
+function loadLastEvent(): EventId | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const v = localStorage.getItem(LAST_EVENT_KEY);
+    return v && (EVENT_IDS as readonly string[]).includes(v) ? (v as EventId) : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function ScoreboardPage() {
-  const [selectedEvent, setSelectedEvent] = useState<EventId>('golf');
+  // Initial event: URL hash > localStorage > default 'golf'.
+  const [selectedEvent, setSelectedEvent] = useState<EventId>(
+    () => loadLastEvent() ?? 'golf'
+  );
   const [initialRound, setInitialRound] = useState<RoundId | undefined>(undefined);
   const [resetOpen, setResetOpen] = useState(false);
   const [resetPwd, setResetPwd] = useState('');
   const [resetErr, setResetErr] = useState(false);
   const { reset } = useStore();
+
+  // Persist the active event tab so refresh keeps you on the same view.
+  useEffect(() => {
+    try {
+      localStorage.setItem(LAST_EVENT_KEY, selectedEvent);
+    } catch {
+      /* ignore */
+    }
+  }, [selectedEvent]);
 
   // Read URL hash for cross-links from Schedule page (e.g. /#event=golf&round=mountain-front).
   useEffect(() => {
