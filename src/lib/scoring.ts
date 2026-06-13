@@ -6,7 +6,7 @@ import {
 } from './matches';
 import {
   BEER_PONG_CAPTAINS_POINTS,
-  DRINKING_POINTS_PER_WIN,
+  DRINKING_POINTS_PER_WIN_BY_EVENT,
   EVENT_IDS,
   type EventId,
 } from './cup';
@@ -47,9 +47,10 @@ export function drinkingEventTotals(
 ): Totals {
   let h = 0;
   let c = 0;
+  const pts = DRINKING_POINTS_PER_WIN_BY_EVENT[eventId];
   Object.values(drinking[eventId] ?? {}).forEach(m => {
-    if (m.winner === 'harvey') h += DRINKING_POINTS_PER_WIN;
-    else if (m.winner === 'carbery') c += DRINKING_POINTS_PER_WIN;
+    if (m.winner === 'harvey') h += pts;
+    else if (m.winner === 'carbery') c += pts;
   });
   return { harvey: h, carbery: c };
 }
@@ -173,7 +174,7 @@ export function computePlayerStats(args: {
         cPlayers = m.carbery.split(' & ').map(x => x.trim());
       }
       const harveyWon = w.winner === 'harvey';
-      const pts = DRINKING_POINTS_PER_WIN;
+      const pts = DRINKING_POINTS_PER_WIN_BY_EVENT[eventId];
       hPlayers.forEach(p => {
         const s = ensure(p, 'harvey');
         s.events[eventId][harveyWon ? 'w' : 'l']++;

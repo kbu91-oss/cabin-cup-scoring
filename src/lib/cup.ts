@@ -15,8 +15,19 @@ export const RESET_SCORES_PASSWORD = 'cabincup';
 
 // Cup scoring math
 export const GOLF_POINTS = 108;
+
+// Per-event drinking points-per-win. Beer die and beer pong are 3 pts each
+// (fewer matches, higher stakes); bags is 2 (more matches, lower stakes).
+export const DRINKING_POINTS_PER_WIN_BY_EVENT: Record<'beer-die' | 'bags' | 'beer-pong', number> = {
+  'beer-die': 3,
+  bags: 2,
+  'beer-pong': 3,
+};
+// Legacy export for any code still importing the old uniform constant.
 export const DRINKING_POINTS_PER_WIN = 2;
+
 export const BEER_PONG_CAPTAINS_POINTS = 1;
+// beer-die 12 × 3 + bags 18 × 2 + beer-pong 12 × 3 = 36 + 36 + 36 = 108
 export const TOTAL_POINTS = 217; // golf 108 + drinking 108 + captains BP 1
 export const WIN_THRESHOLD = 109; // odd total → 109 to win outright
 

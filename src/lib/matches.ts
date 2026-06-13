@@ -72,12 +72,6 @@ const SCHEDULED: Record<DrinkingEventId, { harvey: string; carbery: string; slot
     { harvey: 'Hibbeler & Meyers',        carbery: 'Sanner & Carbery',      slot: 3 },
     { harvey: 'Tiefenwerth & Bouharevich', carbery: 'Hilbrich & Soren',      slot: 4 },
     { harvey: 'Harvey & Arnt',            carbery: 'Carbery & Luczyk',       slot: 4 },
-    { harvey: 'Bouharevich & Hibbeler',   carbery: 'Bui & Sanner',          slot: 5 },
-    { harvey: 'Meyers & Harvey',           carbery: 'Luczyk & Soren',        slot: 5 },
-    { harvey: 'Tiefenwerth & Harvey',     carbery: 'Hilbrich & Carbery',    slot: 6 },
-    { harvey: 'Arnt & Meyers',            carbery: 'Sanner & Soren',        slot: 6 },
-    { harvey: 'Hibbeler & Tiefenwerth',   carbery: 'Sanner & Hilbrich',     slot: 7 },
-    { harvey: 'Bouharevich & Meyers',     carbery: 'Bui & Soren',           slot: 7 },
   ],
   'bags': [
     { harvey: 'Harvey & Hibbeler',          carbery: 'Carbery & Sanner',      slot: 1 },
@@ -104,12 +98,6 @@ const SCHEDULED: Record<DrinkingEventId, { harvey: string; carbery: string; slot
     { harvey: 'Harvey & Hibbeler',          carbery: 'Hilbrich & Carbery',    slot: 3 },
     { harvey: 'Meyers & Arnt',              carbery: 'Hilbrich & Soren',      slot: 4 },
     { harvey: 'Tiefenwerth & Harvey',       carbery: 'Carbery & Sanner',      slot: 4 },
-    { harvey: 'Harvey & Meyers',            carbery: 'Bui & Sanner',          slot: 5 },
-    { harvey: 'Bouharevich & Tiefenwerth',  carbery: 'Luczyk & Soren',         slot: 5 },
-    { harvey: 'Bouharevich & Meyers',       carbery: 'Carbery & Luczyk',      slot: 6 },
-    { harvey: 'Arnt & Harvey',              carbery: 'Bui & Hilbrich',        slot: 6 },
-    { harvey: 'Hibbeler & Bouharevich',     carbery: 'Luczyk & Hilbrich',      slot: 7 },
-    { harvey: 'Arnt & Tiefenwerth',         carbery: 'Sanner & Soren',        slot: 7 },
   ],
 };
 
